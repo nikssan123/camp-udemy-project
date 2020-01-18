@@ -42,7 +42,7 @@ app.use(flash());
 //PASSPORT CONFIG
 //setup session
 app.use(expressSession({
-    secret: "rfsadfgjasdhgfasfogjuisdfngsidfunbvsdfjvksdghnsdgdfgdffughfdsjhgjghfghfgdhjzcxvxbcxvnxcbnuyirqwert[pgd]svxc[vzxc][vzxcbv[]AESDGFASGFVBQWEikngjksdf",
+    secret: process.env.DB_SECRET,
     resave: false,
     saveUninitialized: false
 }));
