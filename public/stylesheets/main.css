@@ -9,3 +9,8 @@
 .delete-form{
     display: inline;
 }
+
+.forms{
+    width: 40%;
+    margin: 25px auto;
+}

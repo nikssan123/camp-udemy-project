@@ -11,7 +11,7 @@ router.get("/", (req, res)=>{
 //Register
 //show register form
 router.get("/register", (req, res) => {
-    res.render("register");
+    res.render("register", {page: "register"});
 });
 
 //handle register
@@ -32,7 +32,7 @@ router.post("/register", (req, res) => {
 //Login
 //show login form
 router.get("/login", (req, res) => {
-    res.render("login");
+    res.render("login", {page: "login"});
 });
 
 //Login logic
@@ -40,7 +40,7 @@ router.post("/login", passport.authenticate("local", {
     successRedirect: "/campgrounds",
     failureRedirect: "/register"
 }), (req, res) => {
-
+    
 });
 
 //Logout

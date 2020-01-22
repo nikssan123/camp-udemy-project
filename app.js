@@ -9,7 +9,8 @@ const express        = require("express"),
     LocalStrategy    = require("passport-local"),
     passportMongoose = require("passport-local-mongoose"),
     expressSession   = require("express-session"),
-    flash            = require("connect-flash");
+    flash            = require("connect-flash"),
+    moment           = require("moment");
 
 //Models
 const Campground       = require("./models/campground"),
@@ -29,15 +30,24 @@ mongoose.connect(process.env.DB_CONNECTION, {useNewUrlParser: true, useCreateInd
 .then(() => {
     console.log("Connected to the DB");
 }).catch(err => {
+    console.log("could not connect!");
     console.log({message: err.message});
 });
+
+// mongoose.connect("mongodb://localhost/yelp_camp", {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology:true, useFindAndModify: false})
+// .then(() => {
+//     console.log("Connected to the DB");
+// }).catch(err => {
+//     console.log("could not connect!");
+//     console.log({message: err.message});
+// });
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(mOverride("_method"));
 app.use(express.static(__dirname + "/public"));
 app.use(flash());
-
+app.locals.moment = moment; // this makes moment available as a variable in every EJS page
 
 //PASSPORT CONFIG
 //setup session

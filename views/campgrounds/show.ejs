@@ -9,6 +9,7 @@
                 <li class="list-group-item">Info 3</li>
             </div>
         </div>
+        <!-- Main conenent -->
         <div class="col-md-9">
             <div class="thumbnail">
                 <img class="image-responsive" src="<%= campground.image %>" alt="">
@@ -17,7 +18,7 @@
                     <h4><a href=""><%= campground.name %></a></h4>
                     <p><%= campground.description %></p>
                     <p>
-                        <em>Submitted by <%= campground.author.username %></em> 
+                        <em>Submitted by <%= campground.author.username %>, <%= moment(campground.date).fromNow();  %></em>                        
                     </p>
                     <% if(currentUser && campground.author.id.equals(currentUser.id)){ %>
                         <a class="btn btn-warning btn-xs" href="/campgrounds/<%= campground.id %>/edit">Edit</a>
@@ -27,6 +28,7 @@
                     <% } %>
                 </div>
             </div>
+            <!-- Comment section -->
             <div class="well">
                 <div class="text-right">
                     <a class="btn btn-success" href="/campgrounds/<%= campground.id %>/comments/new">Add New Comment</a>
@@ -36,7 +38,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <%= comment.author.username %>
-                            <span class="pull-right">10 days ago</span>
+                            <span class="pull-right"><%= moment(comment.date).fromNow() %></span>
                             <p><%= comment.text %></p>
                             <% if(currentUser && comment.author.id.equals(currentUser.id)){ %>
                                 <a class="btn btn-xs btn-warning" href="/campgrounds/<%= campground.id %>/comments/<%= comment.id %>/edit">Edit</a>
