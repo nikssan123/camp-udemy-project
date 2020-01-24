@@ -1,10 +1,12 @@
 <%- include("../partials/header") %>
 
-<div class="container">
-    <div class="row">
+<div class="d-flex container justify-content-center">
+    <div class="row justify-content-center">
+        <div class="col-12 text-center">
+            <h1>Create a New Campground</h1>
+        </div>
         
-        <h1 style="text-align: center;">Create a New Campground</h1>
-        <div style="width: 40%; margin: 25px auto;">
+        <div class="col-7 mt-4">
             <form action="/campgrounds" method="POST">
                 <div class="form-group">
                     <input class="form-control" type="text" name="name" placeholder="Name">

@@ -34,14 +34,6 @@ mongoose.connect(process.env.DB_CONNECTION, {useNewUrlParser: true, useCreateInd
     console.log({message: err.message});
 });
 
-// mongoose.connect("mongodb://localhost/yelp_camp", {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology:true, useFindAndModify: false})
-// .then(() => {
-//     console.log("Connected to the DB");
-// }).catch(err => {
-//     console.log("could not connect!");
-//     console.log({message: err.message});
-// });
-
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(mOverride("_method"));

@@ -9,7 +9,7 @@ router.get("/",  (req, res)=>{
     //Get campgrounds from the db
     Campground.find({})
     .then(campgrounds => {
-        res.render("campgrounds/index", {campgrounds: campgrounds});
+        res.render("campgrounds/index", {campgrounds: campgrounds, page: "home"});
     }).catch(err => {
         console.log({message: err.message});
     });

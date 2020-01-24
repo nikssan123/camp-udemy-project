@@ -1,8 +1,8 @@
-.thumbnail img {
+.card img {
     width: 100%;
 }
 
-.thumbnail {
+.card {
     padding: 0;
 }
 
@@ -13,4 +13,8 @@
 .forms{
     width: 40%;
     margin: 25px auto;
+}
+
+.active{
+ font-weight: 500;
 }
