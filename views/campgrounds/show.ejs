@@ -10,38 +10,58 @@
             </div>
         </div>
 
-        <!-- Main conenent -->
+        <!-- Main content -->
         <div class="col-md-9">
             <div class="card mb-3">
                 <img class="card-img-top" src="<%= campground.image %>" alt="">
                 <div class="card-body">
                     <p class="float-right">$<%= campground.price %>/night</p>
                     <h5 class="card-title"><a href=""><%= campground.name %></a></h5>
-                    
                     <p>
                         <em>Submitted by <%= campground.author.username %>, <%= moment(campground.date).fromNow();  %></em>                        
                     </p>
                     <hr>
                     <p class="card-text"><%= campground.description %></p>
                     <% if(currentUser && campground.author.id.equals(currentUser.id)){ %>
-                        <a class="btn btn-warning btn-sm" href="/campgrounds/<%= campground.id %>/edit">Edit</a>
+                        <a class="btn btn-warning btn-sm" href="/campgrounds/<%= campground.id %>/edit">Edit <i class="fas fa-edit"></i></a>
                         <form class="delete-form" action="/campgrounds/<%= campground.id %>?_method=DELETE" method="POST">
-                            <button class="btn btn-danger btn-sm">Delete</button>
+                            <button class="btn btn-danger btn-sm">Delete <i class="fas fa-trash-alt"></i></button>
                         </form>
                     <% } %>
-                </div>
-                <div class="caption">
-                    
-                    
                 </div>
             </div>
             <!-- Comment section -->
             <div class="card">
                 <div class="card-body">
                     <div class="text-right">
-                        <a class="btn btn-success" href="/campgrounds/<%= campground.id %>/comments/new">Add New Comment</a>
+                        <!-- <a class="btn btn-success" href="/campgrounds/<%= campground.id %>/comments/new">Add New Comment</a> -->
+                        <a class="btn btn-success" href="#add-form" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="add-form">Add New Comment <i class="fas fa-comment-medical"></i></a>
+                    </div>
+                    <!-- Add comment collapsed section -->
+                    <div id="add-form" class="collapse">
+                        <div class="card mt-2">
+                            <div class="card-body add-form pb-0">
+                                <% if(currentUser) { %>
+                                    <h5 class="mb-3"><i class="fas fa-comments"></i> Write your comment</h5>
+                                    <form action="/campgrounds/<%= campground.id %>/comments" method="POST">
+                                        <div class="form-group">
+                                            <input class="form-control" type="text" value="<%= currentUser.username %>" disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <textarea class="form-control"  name="comment[text]" placeholder="Your comment..." rows="5"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-success btn-sm" type="submit">Comment <i class="fas fa-plus"></i></button>
+                                        </div>
+                                    </form>
+                                <% } else {%>
+                                    <p class="warning-message">You need to be logged in to do that! <a href="/login">Click here to login</a></p>
+                                <% } %>
+                            </div>
+                        </div>
                     </div>
                     <hr>
+                    <!-- Displaying comments -->
                     <% campground.comments.forEach(comment => { %>
                         <div class="row">
                             <div class="col-md-12">
@@ -50,10 +70,26 @@
                                 <p class="mb-0"><%= comment.text %></p>
                                 <% if(currentUser && comment.author.id.equals(currentUser.id)){ %>
                                     <div class="float-right">
-                                        <a class="btn btn-sm btn-warning" href="/campgrounds/<%= campground.id %>/comments/<%= comment.id %>/edit">Edit</a>
+                                        <a class="btn btn-sm btn-warning" href="#edit-form" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="edit-form">Edit <i class="fas fa-edit"></i></a>
+                                        <!-- <a class="btn btn-sm btn-warning" href="/campgrounds/<%= campground.id %>/comments/<%= comment.id %>/edit">Edit</a> -->
                                         <form class="delete-form" action="/campgrounds/<%= campground.id %>/comments/<%= comment.id %>?_method=DELETE" method="POST">
-                                            <button  class="btn btn-sm btn-danger">Delete</button>
+                                            <button  class="btn btn-sm btn-danger">Delete <i class="fas fa-trash-alt"></i></button>
                                         </form>
+                                    </div>
+                                    <div class="collapse mt-5" id="edit-form">
+                                        <div class="card">
+                                            <div class="card-body edit-form pb-0">
+                                                <h5 class="mb-3"><i class="fas fa-edit"></i>Edit your comment</h5>
+                                                <form action="/campgrounds/<%= campground.id %>/comments/<%= comment.id %>?_method=PUT" method="POST">
+                                                    <div class="form-group">
+                                                        <input class="form-control" type="text" name="comment[text]" value="<%= comment.text %>">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-sm btn-warning">Edit</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
                                     </div>
                                 <% } %>
                             </div>
@@ -61,13 +97,9 @@
                         <hr>
                     <% }); %>
                 </div>
-                
-            
             </div>
         </div>
     </div>
-
-    
 </div>
 
 <%- include("../partials/footer") %>

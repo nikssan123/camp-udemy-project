@@ -5,17 +5,18 @@ const Campground = require("../models/campground");
 const Comment = require("../models/comment");
 const middleware = require("../middleware");
 
+//Not used anymore
 //Comments new route
-router.get("/new", middleware.isLoggedIn ,(req, res) => {
-    Campground.findById(req.params.id)
-    .then(campground => {
-        res.render("comments/new", {campground: campground});
-    }).catch(err => {
-        console.log({message: err.message});
-        res.redirect("/campgrounds");
-    })
+// router.get("/new", middleware.isLoggedIn ,(req, res) => {
+//     Campground.findById(req.params.id)
+//     .then(campground => {
+//         res.render("comments/new", {campground: campground});
+//     }).catch(err => {
+//         console.log({message: err.message});
+//         res.redirect("/campgrounds");
+//     })
     
-});
+// });
 
 //Comments create route
 router.post("/", middleware.isLoggedIn ,(req, res) => {
@@ -47,17 +48,18 @@ router.post("/", middleware.isLoggedIn ,(req, res) => {
     });
 });
 
+//not used anymore
 //EDIT ROUTE
-router.get("/:comment_id/edit", middleware.checkCommentOwnership, (req, res) => {
-    Comment.findById(req.params.comment_id)
-    .then(comment => {
-        res.render("comments/edit", {campground_id: req.params.id, comment: comment});
-    }).catch(err => {
-        console.log({message: err.message});
-        res.redirect("back");
-    });
+// router.get("/:comment_id/edit", middleware.checkCommentOwnership, (req, res) => {
+//     Comment.findById(req.params.comment_id)
+//     .then(comment => {
+//         res.render("comments/edit", {campground_id: req.params.id, comment: comment});
+//     }).catch(err => {
+//         console.log({message: err.message});
+//         res.redirect("back");
+//     });
     
-});
+// });
 
 //UPDATE ROUTE
 router.put("/:comment_id", middleware.checkCommentOwnership, (req, res) => {

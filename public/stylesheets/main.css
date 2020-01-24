@@ -18,3 +18,16 @@
 .active{
  font-weight: 500;
 }
+
+.add-form{
+    border-left: 2px solid #28a745;
+}
+
+.edit-form{
+    border-left: 2px solid #ffc107;
+}
+
+.warning-message{
+    font-size: 1.2rem;
+    font-weight: 500;
+}
