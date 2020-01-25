@@ -38,7 +38,9 @@ router.get("/login", (req, res) => {
 //Login logic
 router.post("/login", passport.authenticate("local", {
     successRedirect: "/campgrounds",
-    failureRedirect: "/register"
+    failureRedirect: "/login",
+    failureFlash: true,
+    successFlash: "Welcome back"
 }), (req, res) => {
     
 });

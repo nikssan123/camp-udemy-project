@@ -2,23 +2,12 @@
 
 <div class="container">
 
-    <!-- <header class="jumbotron">
-        <div class="container">
-            <h1>Welcome to YelpCamp</h1>
-            <p>View our hand-picked campgounds from all over the world!</p>
-            <p>
-                <a class="btn btn-primary btn-lg" href="/campgrounds/new">Add New Campground</a>
-            </p>
-        </div>
-        
-    </header> -->
-
     <div class="jumbotron">
-        <h1 class="display-4">Welcome to YelpCamp</h1>
+        <h1 class="display-4"><i class="fas fa-campground"></i> Welcome to YelpCamp</h1>
         <p class="lead">View our hand-picked campgounds from all over the world!</p>
         <hr class="my-4">
-        <a class="btn btn-primary btn-lg" href="/campgrounds/new">Add New Campground</a>
-      </div>
+        <a class="btn btn-primary btn-lg" href="/campgrounds/new">Add New Campground <i class="fas fa-feather"></i></a>
+    </div>
 
     <div class="row text-center flex-wrap">
         <% campgrounds.forEach(campground => { %>
@@ -27,7 +16,7 @@
                     <img src="<%= campground.image %>" class="card-img-top" alt="...">
                     <div class="card-body">
                       <h5 class="card-title"><%= campground.name %></h5>
-                      <a href="/campgrounds/<%= campground.id %>" class="btn btn-primary">More Info</a>
+                      <a href="/campgrounds/<%= campground.id %>" class="btn btn-primary">More Info <i class="fas fa-info-circle"></i></a>
                     </div>
                   </div>             
             </div>

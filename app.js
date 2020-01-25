@@ -80,3 +80,8 @@ app.get("*", (req, res)=>{
 app.listen(3000, ()=>{
     console.log("Server listening on PORT 3000");
 });
+
+
+//NOTES
+//Change the API_KEY for the google map at https://console.cloud.google.com/apis/credentials?consoleReturnUrl=https:%2F%2Fcloud.google.com%2Fmaps-platform%2F&consoleUI=CLOUD&project=web-dev-project-1579972016543
+// remove localhost://3000 from http refers and add the legit url

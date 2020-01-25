@@ -15,6 +15,10 @@
     margin: 25px auto;
 }
 
+.sign-form{
+    padding-top: 10vh;
+}
+
 .active{
  font-weight: 500;
 }
@@ -30,4 +34,10 @@
 .warning-message{
     font-size: 1.2rem;
     font-weight: 500;
+}
+
+#map{
+    margin-top: 20px;
+    width: 100%;
+    height: 400px;
 }
