@@ -15,7 +15,7 @@ middlewareObj.checkCommentOwnership = (req, res, next) => {
     if(req.isAuthenticated()){
         Comment.findById(req.params.comment_id)
         .then(comment => {
-            if(comment.author.id.equals(req.user.id)){
+            if(comment.author.id.equals(req.user.id) || req.user.isAdmin){
                 next();
             }else{
                 req.flash("error", "You don't have permission to do that!");
@@ -34,7 +34,7 @@ middlewareObj.checkCampgroundOwnership = (req, res, next) => {
     if(req.isAuthenticated()){
         Campground.findById(req.params.id).
         then(campground => {
-            if(campground.author.id.equals(req.user.id))
+            if(campground.author.id.equals(req.user.id) || req.user.isAdmin)
                 next();
             else{
                 req.flash("error", "You don't have permission to do that!");

@@ -23,7 +23,7 @@
                     </p>
                     <hr>
                     <p class="card-text"><%= campground.description %></p>
-                    <% if(currentUser && campground.author.id.equals(currentUser.id)){ %>
+                    <% if(currentUser && (campground.author.id.equals(currentUser.id) || currentUser.isAdmin )){ %>
                         <a class="btn btn-warning btn-sm" href="/campgrounds/<%= campground.id %>/edit">Edit <i class="fas fa-edit"></i></a>
                         <form class="delete-form" action="/campgrounds/<%= campground.id %>?_method=DELETE" method="POST">
                             <button class="btn btn-danger btn-sm">Delete <i class="fas fa-trash-alt"></i></button>
@@ -60,7 +60,7 @@
                                 <% } %>
                             </div>
                         </div>
-                    </div>
+                    </div> <!-- Closing the add-form div -->
                     <hr>
                     <!-- Displaying comments -->
                     <% if(!campground.comments.length) { %>
@@ -73,7 +73,7 @@
                                 <span class="float-right"><%= moment(comment.date).fromNow() %></span>
                                 <p class="mb-0"><%= comment.text %></p>
                                 <!-- Forms -->
-                                <% if(currentUser && comment.author.id.equals(currentUser.id)){ %>
+                                <% if(currentUser && (comment.author.id.equals(currentUser.id) || currentUser.isAdmin)){ %>
                                     <div class="float-right">
                                         <a class="btn btn-sm btn-warning" href="#edit-form" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="edit-form">Edit <i class="fas fa-edit"></i></a>
                                         <!-- <a class="btn btn-sm btn-warning" href="/campgrounds/<%= campground.id %>/comments/<%= comment.id %>/edit">Edit</a> -->
@@ -103,39 +103,50 @@
                         <hr>
                     <% }); %>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="loc"><%= campground.lat %></div>
-</div>
+            </div> <!-- comment section card closing -->
+        </div> <!-- main content closing -->
+    </div> <!-- .row closing -->
+</div> <!-- .container closing -->
 
+<!-- Map script -->
 <script type="text/javascript">
     function initMap() {
-      const lat =   Number('<%= campground.lat %>');
-      const lng =  Number('<%= campground.lng %>'); 
-      const center = {lat: lat, lng: lng };
-      const map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 8,
-          center: center,
-          scrollwheel: true
-      });
-      const contentString = `
-        <strong><%= campground.name %><br />
-        <%= campground.location %></strong>
-        <p><%= campground.description %></p>
-      `
-      const infowindow = new google.maps.InfoWindow({
-        content: contentString
-      });
-      const marker = new google.maps.Marker({
-          position: center,
-          map: map
-      });
-      marker.addListener('click', () => {
-        infowindow.open(map, marker);
-      });
+        //get information about the location
+        const lat =   Number('<%= campground.lat %>');
+        const lng =  Number('<%= campground.lng %>'); 
+        const center = {lat: lat, lng: lng };
+
+        //create new google map with center based on the location
+        const map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 10,
+            center: center,
+            scrollwheel: true
+        });
+
+        //this string is to be displayed when clicked on the marker
+        const contentString = `
+            <strong><%= campground.name %><br />
+            <%= campground.location %></strong>
+            <p><%= campground.description %></p>
+        `
+        //display the content string in an infowindow
+        const infowindow = new google.maps.InfoWindow({
+            content: contentString
+        });
+
+        //create new marker at the center position
+        const marker = new google.maps.Marker({
+            position: center,
+            map: map
+        });
+        
+        //add on click listener for the marker to display the info window
+        marker.addListener('click', () => {
+            infowindow.open(map, marker);
+        });
     }
-  </script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBII3hfRlVJtV1xekRaBigp5IbFv2pbtLY&callback=initMap"></script>
+</script>
+<!-- Don't steal this key :) -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBII3hfRlVJtV1xekRaBigp5IbFv2pbtLY&callback=initMap"></script>
 
 <%- include("../partials/footer") %>
