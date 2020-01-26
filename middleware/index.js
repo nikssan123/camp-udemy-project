@@ -51,5 +51,4 @@ middlewareObj.checkCampgroundOwnership = (req, res, next) => {
     }
 }
 
-
 module.exports = middlewareObj;

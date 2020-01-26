@@ -12,14 +12,38 @@ const geocoder = nodeGeocoder({provider: "google", httpAdapter: "https",  apiKey
 
 //Make the functions async !!!!
 //INDEX ROUTE
-router.get("/",  (req, res)=>{
+router.get("/",  async (req, res)=>{
     //Get campgrounds from the db
-    Campground.find({})
-    .then(campgrounds => {
-        res.render("campgrounds/index", {campgrounds: campgrounds, page: "home"});
+
+    const limit = 8;
+    const pageQuery = parseInt(req.query.page);
+    const page = pageQuery ? pageQuery : 1;
+
+    const startIndex = (page - 1) * limit;
+
+    await Campground.find({}).limit(limit).skip(startIndex).exec()
+    .then(async allCampgrounds => {
+        await Campground.countDocuments().exec()
+        .then(count => {
+            res.render("campgrounds/index", {
+                campgrounds: allCampgrounds,
+                current: page,
+                pages: Math.ceil(count / limit)
+            });
+        }).catch(err => {
+            console.log({message: err.message});
+        });
+
     }).catch(err => {
         console.log({message: err.message});
     });
+
+    // Campground.find({})
+    // .then(campgrounds => {
+    //     res.render("campgrounds/index", {campgrounds: campgrounds, page: "home"});
+    // }).catch(err => {
+    //     console.log({message: err.message});
+    // });
 });
 
 //CREATE ROUTE

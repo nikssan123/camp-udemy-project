@@ -16,7 +16,12 @@
             <div class="card mb-3">
                 <img class="card-img-top" src="<%= campground.image %>" alt="">
                 <div class="card-body">
-                    <p class="float-right">$<%= campground.price %>/night</p>
+                    <% if(Number(campground.price) === 0) { %>
+                        <p class="float-right">Free</p>
+                    <% } else{ %>
+                        <p class="float-right">$<%= campground.price %>/night</p>
+                    <% } %>
+                    
                     <h5 class="card-title"><a href=""><%= campground.name %></a></h5>
                     <p>
                         <em>Submitted by <%= campground.author.username %>, <%= moment(campground.date).fromNow();  %></em>                        

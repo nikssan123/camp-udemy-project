@@ -24,17 +24,17 @@
           <!-- Left part -->
           <ul class="navbar-nav mr-auto">
             <li class="nav-item <%= typeof page !== 'undefined' && page === 'home' ? 'active' : '' %>">
-              <a class="nav-link" href="/campgrounds">Home</a>
+              <a class="nav-link" href="/campgrounds">Home <i class="fas fa-home"></i></a>
             </li>
           </ul>
           <!-- Right part -->
           <ul class="navbar-nav">
             <% if(!currentUser){ %>
-              <li class="nav-item <%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>"><a class="nav-link" href="/login">Login</a></li>
-              <li class="nav-item <%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>"><a class="nav-link" href="/register">Sing Up</a>
+              <li class="nav-item <%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>"><a class="nav-link" href="/login">Login <i class="fas fa-sign-in-alt"></i></a></li>
+              <li class="nav-item <%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>"><a class="nav-link" href="/register">Sing Up <i class="fas fa-user-plus"></i></a>
             <% }else { %>
-              <li class="nav-item"><a class="nav-link" href="#">Signed In As <%= currentUser.username %></a></li class="<%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>">
-              <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li class="<%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>">
+              <li class="nav-item"><a class="nav-link" href="#">Signed In As <%= currentUser.username %></a></li>
+              <li class="nav-item"><a class="nav-link" href="/logout">Logout <i class="fas fa-sign-out-alt"></i></a></li>
             <% } %>
           </ul>
         </div>

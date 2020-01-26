@@ -4,7 +4,7 @@
 
     <div class="jumbotron">
         <h1 class="display-4"><i class="fas fa-campground"></i> Welcome to YelpCamp</h1>
-        <p class="lead">View our hand-picked campgounds from all over the world!</p>
+        <p class="lead d-none d-sm-block">View our hand-picked campgounds from all over the world!</p>
         <hr class="my-4">
         <a class="btn btn-primary btn-lg" href="/campgrounds/new">Add New Campground <i class="fas fa-feather"></i></a>
     </div>
@@ -13,7 +13,7 @@
         <% campgrounds.forEach(campground => { %>
             <div class="col-lg-3 col-md-4 col-sm-6 mb-3"> 
                 <div class="card">
-                    <img src="<%= campground.image %>" class="card-img-top" alt="...">
+                    <img src="<%= campground.image %>" class="card-img-top" id="index-image" alt="index images">
                     <div class="card-body">
                       <h5 class="card-title"><%= campground.name %></h5>
                       <a href="/campgrounds/<%= campground.id %>" class="btn btn-primary">More Info <i class="fas fa-info-circle"></i></a>
@@ -22,6 +22,59 @@
             </div>
         <% }); %>
     </div>
-</div>
+
+    <!-- Pagination of the index page -->
+    <nav aria-label="Page navigation example" class="mt-4">
+        <% if(pages && pages > 0) { %>
+            <ul class="pagination justify-content-center">
+                <!-- If there is only one page disable the links -->
+                <% if(current == 1) { %>
+                    <li class="page-item disabled"><a class="page-link">First</a></li>
+                <% } else { %>
+                    <li class="page-item "><a class="page-link" href="/campgrounds">First</a></li>
+                <% } %>
+
+                <% if(current == 1) { %>
+                    <li class="page-item disabled"><a class="page-link">&laquo;</a></li>
+                <% } else { %>
+                    <li class="page-item "><a class="page-link" href="/campgrounds?page=<%= Number(current) - 1 %>">&laquo;</a></li>
+                <% } %>
+
+                <!-- Displaying the pages numbers -->
+                <!-- the i variable is for the loop and its value is based on the current page -> if its more than 5, 4 is substracted so 5 links will be shown -->
+                <% let i = (Number(current) > 5 ? Number(current) - 4 : 1 ); %>
+
+                <!-- if there are only 5 pages the dots are removed -->
+                <% if(i !== 1) { %>
+                    <li class="page-item disabled"><a class="page-link">...</a></li>
+                <% } %>
+
+                <!-- the main loop -->
+                <% for(; i <= (Number(current) + 4) && i <= pages; i++ ) { %>
+                    <!-- adding the active class to the current page -->
+                    <% if(i == current) { %>
+                        <li class="page-item active"><a class="page-link"><%= i %></a></li>
+                    <% } else {%>
+                        <li class="page-item"><a class="page-link" href="/campgrounds?page=<%= i %>"><%= i %></a></li>
+                    <% } %>
+                    <% if(i === Number(current) + 4 && i < pages) { %>
+                        <li class="page-item disabled"><a class="page-link">...</a></li>
+                    <% } %>
+                <% } %>
+                <!-- If there is only one page disable the links -->
+                <% if(current === pages) { %>
+                    <li class="page-item disabled"><a class="page-link">&raquo;</a></li>
+                <% } else { %>
+                    <li class="page-item "><a class="page-link" href="/campgrounds?page=<%= Number(current) + 1 %>">&raquo;</a></li>
+                <% } %>
+                <% if(current === pages) { %>
+                    <li class="page-item disabled"><a class="page-link">Last</a></li>
+                <% } else { %>
+                    <li class="page-item "><a class="page-link" href="/campgrounds?page=<%= pages %>">Last</a></li>
+                <% } %>
+            </ul>
+        <% } %>    
+    </nav>
+</div> <!-- .container closing -->
 
 <%- include("../partials/footer") %>
