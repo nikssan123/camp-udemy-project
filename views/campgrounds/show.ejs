@@ -1,4 +1,7 @@
 <%- include("../partials/header") %>
+
+<!-- Use filter.clean() method everywhere where user input must be sanitized for "bad-words" - passed from the app.js -->
+
 <div class="container">
     <div class="row">
         <div class="col-md-3">
@@ -22,12 +25,13 @@
                         <p class="float-right">$<%= campground.price %>/night</p>
                     <% } %>
                     
-                    <h5 class="card-title"><a href=""><%= campground.name %></a></h5>
+                    <h5 class="card-title"><a href=""><%= filter.clean(campground.name) %></a></h5>
                     <p>
                         <em>Submitted by <%= campground.author.username %>, <%= moment(campground.date).fromNow();  %></em>                        
                     </p>
                     <hr>
-                    <p class="card-text"><%= campground.description %></p>
+                    <p class="card-text"><%= filter.clean(campground.description) %></p>
+                    <!-- show the edit and delete forms only if the user owns the post or the user has admin rights -->
                     <% if(currentUser && (campground.author.id.equals(currentUser.id) || currentUser.isAdmin )){ %>
                         <a class="btn btn-warning btn-sm" href="/campgrounds/<%= campground.id %>/edit">Edit <i class="fas fa-edit"></i></a>
                         <form class="delete-form" action="/campgrounds/<%= campground.id %>?_method=DELETE" method="POST">
@@ -36,6 +40,8 @@
                     <% } %>
                 </div>
             </div>
+
+
             <!-- Comment section -->
             <div class="card">
                 <div class="card-body">
@@ -71,29 +77,32 @@
                     <% if(!campground.comments.length) { %>
                         <p class="text-center"><em>No comments yet</em></p>
                     <% } %>
+                    <!-- simulated a for loop in a for each loop with the bellow variable which is used for the toggle edit button -> knows exactly which form to toggle -->
+                    <% let i = 0; %>
                     <% campground.comments.forEach(comment => { %>
+                        <% i++; %>
                         <div class="row">
                             <div class="col-md-12">
-                                <%= comment.author.username %>
+                                <strong><%= comment.author.username %></strong>
                                 <span class="float-right"><%= moment(comment.date).fromNow() %></span>
-                                <p class="mb-0"><%= comment.text %></p>
+                                <p class="mb-0"><%= filter.clean(comment.text) %></p>
                                 <!-- Forms -->
                                 <% if(currentUser && (comment.author.id.equals(currentUser.id) || currentUser.isAdmin)){ %>
                                     <div class="float-right">
-                                        <a class="btn btn-sm btn-warning" href="#edit-form" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="edit-form">Edit <i class="fas fa-edit"></i></a>
+                                        <a class="btn btn-sm btn-warning" href="#edit-form-<%= i %>" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="edit-form-<%= i %>">Edit <i class="fas fa-edit"></i></a>
                                         <!-- <a class="btn btn-sm btn-warning" href="/campgrounds/<%= campground.id %>/comments/<%= comment.id %>/edit">Edit</a> -->
                                         <form class="delete-form" action="/campgrounds/<%= campground.id %>/comments/<%= comment.id %>?_method=DELETE" method="POST">
                                             <button  class="btn btn-sm btn-danger">Delete <i class="fas fa-trash-alt"></i></button>
                                         </form>
                                     </div>
                                     <!-- Edit form - collapsed -->
-                                    <div class="collapse mt-5" id="edit-form">
+                                    <div class="collapse mt-5" id="edit-form-<%= i %>">
                                         <div class="card">
                                             <div class="card-body edit-form pb-0">
                                                 <h5 class="mb-3"><i class="fas fa-edit"></i>Edit your comment</h5>
                                                 <form action="/campgrounds/<%= campground.id %>/comments/<%= comment.id %>?_method=PUT" method="POST">
                                                     <div class="form-group">
-                                                        <input class="form-control" type="text" name="comment[text]" value="<%= comment.text %>">
+                                                        <textarea class="form-control"  name="comment[text]" rows="5"><%= comment.text %></textarea>
                                                     </div>
                                                     <div class="form-group">
                                                         <button type="submit" class="btn btn-sm btn-warning">Edit</button>

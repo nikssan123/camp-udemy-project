@@ -5,6 +5,8 @@ const Campground = require("../models/campground");
 const Comment = require("../models/comment");
 const middleware = require("../middleware");
 
+
+
 //Not used anymore
 //Comments new route
 // router.get("/new", middleware.isLoggedIn ,(req, res) => {
@@ -37,12 +39,14 @@ router.post("/", middleware.isLoggedIn ,(req, res) => {
             //redirect 
             res.redirect("/campgrounds/" + req.params.id);
         }).catch(err => {
-            console.log({message: err.message});
+            console.log({message: err});
+            console.log(err);
             req.flash("error", "Something went wrong!");
             res.redirect("/campgrounds/" + req.params.id);
         });
     }).catch(err => {
-        console.log({message: err.message});
+        console.log({message: err});
+        console.log(err);
         req.flash("error", "Something went wrong!");
         res.redirect("/campgrounds/" + req.params.id);
     });
@@ -65,6 +69,7 @@ router.post("/", middleware.isLoggedIn ,(req, res) => {
 router.put("/:comment_id", middleware.checkCommentOwnership, (req, res) => {
     Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment)
     .then(()=>{
+        req.flash("success", "Successfully edited the comment!");
         res.redirect("/campgrounds/" + req.params.id);
     }).catch(err => {
         console.log({message: err.message});

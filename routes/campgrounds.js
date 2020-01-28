@@ -15,12 +15,15 @@ const geocoder = nodeGeocoder({provider: "google", httpAdapter: "https",  apiKey
 router.get("/",  async (req, res)=>{
     //Get campgrounds from the db
 
+    //page limit
     const limit = 8;
     const pageQuery = parseInt(req.query.page);
     const page = pageQuery ? pageQuery : 1;
 
+    //first thing to show on the page
     const startIndex = (page - 1) * limit;
 
+    //limit the search with the page limit variable and skip to the start index
     await Campground.find({}).limit(limit).skip(startIndex).exec()
     .then(async allCampgrounds => {
         await Campground.countDocuments().exec()
@@ -28,7 +31,8 @@ router.get("/",  async (req, res)=>{
             res.render("campgrounds/index", {
                 campgrounds: allCampgrounds,
                 current: page,
-                pages: Math.ceil(count / limit)
+                pages: Math.ceil(count / limit),
+                page: "home"
             });
         }).catch(err => {
             console.log({message: err.message});
@@ -57,7 +61,7 @@ router.post("/", middleware.isLoggedIn ,(req, res)=>{
         id: req.user.id,
         username: req.user.username
     };
-    console.log(req.body.location);
+    //geocodes the addres 
     geocoder.geocode(req.body.location, (err, data) =>{
 
         if(err || !data.length){

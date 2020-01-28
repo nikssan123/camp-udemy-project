@@ -10,7 +10,8 @@ const express        = require("express"),
     passportMongoose = require("passport-local-mongoose"),
     expressSession   = require("express-session"),
     flash            = require("connect-flash"),
-    moment           = require("moment");
+    moment           = require("moment"),
+    Filter           = require("bad-words");
 
 //Models
 const Campground       = require("./models/campground"),
@@ -40,6 +41,7 @@ app.use(mOverride("_method"));
 app.use(express.static(__dirname + "/public"));
 app.use(flash());
 app.locals.moment = moment; // this makes moment available as a variable in every EJS page
+app.locals.filter = new Filter();  // makes the filter var available in every ejs file
 
 //PASSPORT CONFIG
 //setup session
