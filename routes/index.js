@@ -76,7 +76,9 @@ router.get("/logout", (req, res) => {
     res.redirect("/campgrounds");
 });
 
-
+router.get("/app-ads.txt", (req,res) => {
+    res.sendFile(__dirname + "/app-ads.txt");
+})
 
 
 module.exports = router;
