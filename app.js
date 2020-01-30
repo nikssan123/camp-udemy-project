@@ -59,7 +59,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 //encoding
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-
+ 
 //middleware
 //define after passport init!
 app.use(function(req, res, next){
