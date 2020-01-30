@@ -79,15 +79,31 @@ router.put("/:comment_id", middleware.checkCommentOwnership, (req, res) => {
 
 //DELETE ROUTE
 router.delete("/:comment_id", middleware.checkCommentOwnership,  (req, res) => {
-    Comment.findByIdAndDelete(req.params.comment_id)
-    .then(()=>{
-        req.flash("success", "Comment deleted!");
-        res.redirect("back");
+
+    Campground.findById(req.params.id)
+    .then(campground => {
+        //array.some() method is used to find the comment in the comments array and pull it from that campground
+        campground.comments.some(comment => {
+            if(comment.equals(req.params.comment_id)){
+                campground.comments.pull(comment);
+            }
+        });
+
+        Comment.findByIdAndDelete(req.params.comment_id)
+        .then(()=>{
+            req.flash("success", "Comment deleted!");
+            res.redirect("back");
+        }).catch(err => {
+            console.log({message: err.message});
+            req.flash("error", "Something went wrong!");
+            res.redirect("back");
+        });
     }).catch(err => {
         console.log({message: err.message});
         req.flash("error", "Something went wrong!");
         res.redirect("back");
-    });
+    })
+
 });
 
 

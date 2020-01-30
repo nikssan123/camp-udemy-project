@@ -29,6 +29,27 @@
                     <p>
                         <em>Submitted by <%= campground.author.username %>, <%= moment(campground.date).fromNow();  %></em>                        
                     </p>
+                    <!-- Like button form -->
+                    <div class="likes">
+                        <form class="like-form" action="/campgrounds/<%= campground.id %>/like" method="POST">
+                            <% if(currentUser){ %>
+                                <% let isLiked = campground.likes.some(like => { return like.equals(currentUser.id);}) %>
+                                <% if(isLiked){ %>
+                                    <button class="btn btn-sm btn-primary"><i class="fas fa-thumbs-up"></i> Liked (<%= campground.likes.length %>)</button>
+                                <% } else {%>  
+                                    <button class="btn btn-sm btn-primary"><i class="fas fa-thumbs-up"></i> Like (<%= campground.likes.length %>)</button>
+                                <% } %>
+                            <% } %>
+                        </form>
+
+                        <div class="float-right total-likes">
+                            <button class="btn btn-sm btn-primary btn-block" data-toggle="modal" data-target="#showLikes" title="View likes">
+                                <i class="fas fa-thumbs-up"></i> Total Likes: <%= campground.likes.length %>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    
                     <hr>
                     <p class="card-text"><%= filter.clean(campground.description) %></p>
                     <!-- show the edit and delete forms only if the user owns the post or the user has admin rights -->
@@ -121,6 +142,39 @@
         </div> <!-- main content closing -->
     </div> <!-- .row closing -->
 </div> <!-- .container closing -->
+
+
+<!-- Modal likes -->
+<div class="modal fade" id="showLikes" tabindex="-1" role="dialog" aria-labelledby="showLikesLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><%= campground.name %> likes: <%= campground.likes.length %></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <% if(campground.likes.length === 0){ %>
+                   <em>No likes yet</em>
+                <% }else { %>
+                    <strong>Liked by:</strong>
+                    <% campground.likes.forEach(like => { %>
+                        <div class="row">
+                            <div class="col-12">
+                                <i class="far fa-user"></i> <%= like.username %>
+                            </div>
+                        </div>
+                        
+                    <% }); %>
+                <% } %>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Map script -->
 <script type="text/javascript">

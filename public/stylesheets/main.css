@@ -47,6 +47,20 @@
     height: 200px;
 }
 
+.likes{
+    height: 30px;
+    display: block;
+    /* padding-bottom: 20px; */
+}
+
+.like-form{
+    padding: 0;
+    margin: 0;
+    display: inline;
+}
+
+
+
 /* Bellow code is for campground index page -> on sm page make the card class less streched */
 /* .campground-card{
     width: 50%;

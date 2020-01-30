@@ -87,7 +87,6 @@ router.post("/", middleware.isLoggedIn ,(req, res)=>{
         });
     });
     
-    //redirect back to get campgrounds
     
 });
 
@@ -100,7 +99,7 @@ router.get("/new", middleware.isLoggedIn ,(req, res)=>{
 router.get("/:id", (req, res)=>{
     let id = req.params.id;
     //.populate("comments").exec() will populate the comments array of the Campground object
-    Campground.findById(id).populate("comments").exec()
+    Campground.findById(id).populate("comments likes").exec()
     .then(campground => {
         res.render("campgrounds/show", {campground: campground});
     }).catch(err => {
@@ -146,7 +145,7 @@ router.put("/:id", middleware.checkCampgroundOwnership, (req, res) => {
 })
 
 //DESTROY ROUTE
-router.delete("/:id", middleware.checkCampgroundOwnership ,(req, res) => {
+router.delete("/:id", middleware.checkCampgroundOwnership, (req, res) => {
     Campground.findByIdAndRemove(req.params.id)
     .then(() => {
         req.flash("success", "Successfully deleted the campground!");
@@ -154,6 +153,31 @@ router.delete("/:id", middleware.checkCampgroundOwnership ,(req, res) => {
     }).catch(err => {
         console.log({message: err.message});
         res.redirect("/campgrounds");
+    });
+});
+
+//LIKES ROUTE
+
+router.post("/:id/like", middleware.isLoggedIn, (req, res) => {
+    Campground.findById(req.params.id)
+    .then(async campground => {
+        let isLiked = campground.likes.some(like => {
+            return like.equals(req.user.id);
+        });
+
+        if(isLiked){
+            campground.likes.pull(req.user.id);
+        }else{
+            campground.likes.push(req.user);
+        }
+
+        await campground.save();
+
+        res.redirect("/campgrounds/" + req.params.id);
+    }).catch(err => {
+        console.log({message: err.message});
+        req.flash("error", "Something went wrong!");
+        res.redirect("/campgrounds/" + req.params.id);
     });
 });
 
