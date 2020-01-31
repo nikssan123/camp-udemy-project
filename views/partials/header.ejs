@@ -36,9 +36,11 @@
             <% }else { %>
               <!-- <li class="nav-item"><a class="nav-link" href="#">Signed In As <%= currentUser.username %></a></li>
               <li class="nav-item"><a class="nav-link" href="/logout">Logout <i class="fas fa-sign-out-alt"></i></a></li> -->
+              <li class="nav-item"><a class="nav-link disabled" href="#"><%= currentUser.isAdmin ? "Administrator account:" : "Signed In as:" %></a></li>
               <li class="nav-item dropdown">
+                
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <%= currentUser.isAdmin ? "Administrator account:" : "Signed In as:" %> <%= currentUser.username %>
+                   <%= currentUser.username %>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <a class="dropdown-item" href="#"><i class="fas fa-user-alt"></i> Dashboard</a>
