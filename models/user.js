@@ -8,6 +8,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
+    // facebook: {
+    //     id: String,
+    //     email: String
+    // }
 });
 
 userSchema.plugin(passportMongoose);

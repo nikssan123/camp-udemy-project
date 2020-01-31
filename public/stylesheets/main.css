@@ -1,3 +1,7 @@
+.navbar-light .navbar-nav .nav-link{
+    color: rgba(0, 0, 0, 0.7);
+}
+
 .card img {
     width: 100%;
 }
@@ -18,6 +22,17 @@
 .sign-form{
     padding-top: 10vh;
 }
+
+.search-form{
+    margin-top: 20px;
+    padding: 0;
+}
+
+.search-form input[type="text"]{
+    border-radius: 10px;
+    padding: 2px;
+}
+
 
 .active{
  font-weight: 500;

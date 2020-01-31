@@ -3,6 +3,7 @@ const router = express.Router();
 const Campground = require("../models/campground");
 const middleware = require("../middleware");
 const nodeGeocoder = require("node-geocoder");
+const FuzzySearch = require("fuzzy-search");
 
 require("dotenv").config(); 
 
@@ -13,8 +14,9 @@ const geocoder = nodeGeocoder({provider: "google", httpAdapter: "https",  apiKey
 //Make the functions async !!!!
 //INDEX ROUTE
 router.get("/",  async (req, res)=>{
-    //Get campgrounds from the db
 
+    //Get the searched keyword
+    let keyword = req.query.word;
     //page limit
     const limit = 8;
     const pageQuery = parseInt(req.query.page);
@@ -23,31 +25,25 @@ router.get("/",  async (req, res)=>{
     //first thing to show on the page
     const startIndex = (page - 1) * limit;
 
+    keyword ? keyword = {name: keyword} : keyword = {};
+    
     //limit the search with the page limit variable and skip to the start index
-    await Campground.find({}).limit(limit).skip(startIndex).exec()
-    .then(async allCampgrounds => {
-        await Campground.countDocuments().exec()
-        .then(count => {
-            res.render("campgrounds/index", {
-                campgrounds: allCampgrounds,
-                current: page,
-                pages: Math.ceil(count / limit),
-                page: "home"
+    await Campground.find(keyword).limit(limit).skip(startIndex).exec()
+        .then(async allCampgrounds => {
+            await Campground.countDocuments().exec()
+            .then(count => {
+                res.render("campgrounds/index", {
+                    campgrounds: allCampgrounds,
+                    current: page,
+                    pages: Math.ceil(count / limit),
+                    page: "home"
+                });
+            }).catch(err => {
+                console.log({message: err.message});
             });
         }).catch(err => {
             console.log({message: err.message});
         });
-
-    }).catch(err => {
-        console.log({message: err.message});
-    });
-
-    // Campground.find({})
-    // .then(campgrounds => {
-    //     res.render("campgrounds/index", {campgrounds: campgrounds, page: "home"});
-    // }).catch(err => {
-    //     console.log({message: err.message});
-    // });
 });
 
 //CREATE ROUTE
@@ -180,5 +176,7 @@ router.post("/:id/like", middleware.isLoggedIn, (req, res) => {
         res.redirect("/campgrounds/" + req.params.id);
     });
 });
+
+
 
 module.exports = router;

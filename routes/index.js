@@ -5,7 +5,6 @@ const User = require("../models/user");
 //setting up express-validator middleware
 const { check, validationResult } = require('express-validator');
 
-// router.use(validator());
 
 //root route
 router.get("/", (req, res)=>{
@@ -78,7 +77,7 @@ router.get("/logout", (req, res) => {
 
 router.get("/app-ads.txt", (req,res) => {
     res.sendFile(__dirname + "/app-ads.txt");
-})
+});
 
 
 module.exports = router;

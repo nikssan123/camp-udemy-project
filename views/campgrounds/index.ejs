@@ -7,16 +7,29 @@
         <p class="lead d-none d-sm-block">View our hand-picked campgounds from all over the world!</p>
         <hr class="my-4">
         <a class="btn btn-primary btn-lg" href="/campgrounds/new">Add New Campground <i class="fas fa-feather"></i></a>
+       
+            <form action="/campgrounds" method="GET">
+                <div class="search-form btn-lg d-flex">
+                    <input class="border border-primary" type="text" name="word" placeholder="Search...">
+                    <button class="btn border border-primary btn-sm ml-2" title="Search"><i class="fas fa-search"></i></button>
+                </div>
+                
+            </form>
+        
+        
     </div>
 
-    <div class="row text-center flex-wrap">
+    <div class="row text-center flex-wrap d-flex justify-content-center">
+        <% if(campgrounds.length === 0){ %>
+            <h5 class="text-center " ><em>No Campgrounds</em></h5>
+        <% } %>
         <% campgrounds.forEach(campground => { %>
             <div class="col-lg-3 col-md-4 col-sm-6 mb-3"> 
                 <div class="card">
                     <img src="<%= campground.image %>" class="card-img-top" id="index-image" alt="index images">
                     <div class="card-body">
-                      <h5 class="card-title"><%= campground.name %></h5>
-                      <a href="/campgrounds/<%= campground.id %>" class="btn btn-primary">More Info <i class="fas fa-info-circle"></i></a>
+                        <h5 class="card-title"><%= filter.clean(campground.name) %></h5>
+                        <a href="/campgrounds/<%= campground.id %>" class="btn btn-primary">More Info <i class="fas fa-info-circle"></i></a>
                     </div>
                   </div>             
             </div>
