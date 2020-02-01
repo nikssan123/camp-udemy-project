@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const User = require("../models/user");
+const middleware = require("../middleware");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
@@ -23,10 +24,12 @@ router.get("/register", (req, res) => {
 //handle register
 //use express-validator middleware to validate the inputed username and password
 router.post("/register", [
-    check("username").not().isEmpty(),
+    check("username").trim().not().isEmpty(),
     check("password").isLength({min: 5}).withMessage("be atleast 5 characters long!")
     .matches(/\d/).withMessage("contain a number!"),
+    check("email").trim().not().isEmpty(),
     check("email").isEmail()
+    
 ] ,(req, res) => {
     
     //the errors that are potentially passed
@@ -69,7 +72,7 @@ router.post("/login", passport.authenticate("local", {
     successRedirect: "/campgrounds",
     failureRedirect: "/login",
     failureFlash: true,
-    successFlash: "Welcome back",
+    successFlash: "Welcome back!",
 }), (req, res) => {
     
 });
@@ -215,6 +218,51 @@ router.post("/reset/:token", [
         res.redirect("/reset/" + req.params.token);
     }
 });
+
+//USER SETTINGS
+router.get("/settings",  middleware.isLoggedIn, (req, res) => {
+    res.render("user/edit");
+});
+
+router.put("/settings", middleware.isLoggedIn, [
+    check("username").trim().not().isEmpty(),
+    check("email").isEmail()
+], async (req, res) => {
+
+    //find the user by his username
+    User.findOne({username: req.user.username}).then(async user => {
+        user.username = req.body.username;
+        user.email = req.body.email;
+
+        await user.save().then(() => {
+            req.logIn(user, err => {
+                req.flash("success", "Successfully edited your account settings!");
+                res.redirect("/campgrounds");
+            });
+        }).catch(err => {
+            console.log(err);
+            req.flash("error", "Something went wrong!");
+            res.redirect("/settings");
+        });
+    }).catch(err => {
+        console.log(err);
+        req.flash("error", "Something went wrong!");
+        res.redirect("/settings");
+    });
+    
+});
+
+router.delete("/settings", middleware.isLoggedIn, (req, res) => {
+    User.findOneAndDelete({_id: req.user._id}).then(() => {
+        req.flash("error", "Successfully deleted account!");
+        res.redirect("/campgrounds");
+    }).catch(err => {
+        console.log({message: err.message});
+        req.flash("error", "Something went wrong!");
+        res.redirect("/settings");
+    });
+});
+
 
 router.get("/app-ads.txt", (req,res) => {
     res.sendFile(__dirname + "/app-ads.txt");

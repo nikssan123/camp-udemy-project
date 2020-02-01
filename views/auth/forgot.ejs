@@ -8,7 +8,11 @@
             <div class="forms">
                 <form action="/forgot" method="POST">
                     <div class="form-group">
-                        <input class="form-control" type="text" name="email" placeholder="Email" required autofocus>
+                        <% if(!currentUser){ %>
+                            <input class="form-control" type="text" name="email" placeholder="Email" required autofocus>
+                        <% }else{ %>
+                            <input class="form-control" type="text" name="email" value="<%= currentUser.email %>" required autofocus>
+                        <% } %>
                     </div>
                     <div class="form-group">
                         <button class="btn btn-primary btn-block">Resset Password</button>

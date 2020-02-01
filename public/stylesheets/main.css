@@ -76,6 +76,12 @@
 }
 
 
+.labels{
+    display: block;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
 
 /* Bellow code is for campground index page -> on sm page make the card class less streched */
 /* .campground-card{
