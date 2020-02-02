@@ -16,8 +16,16 @@
 }
 
 .forms{
-    width: 40%;
+    width: 65%;
     margin: 25px auto;
+}
+
+@media (min-width: 768px) { 
+
+    .forms{
+        width: 40%;
+        margin: 25px auto;
+    }
 }
 
 .sign-form{
@@ -80,6 +88,14 @@
     display: block;
     font-weight: bold;
     margin-bottom: 3px;
+}
+
+#image-upload{
+    width: 50%;
+}
+
+.small{
+    font-size: small;
 }
 
 

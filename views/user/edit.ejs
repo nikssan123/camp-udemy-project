@@ -6,27 +6,27 @@
         <div class="col-10">
             <h3 class="pt-3">Account Settings</h3>
             <div class="card">
-                <div class="pl-5 pt-5 card-body ">
+                <div class="px-5 pt-5 card-body ">
                     <form action="/settings/?_method=PUT" method="POST">
                         <div class="form-group">
-                            <label for="username" class="labels">Username: </label>
+                            <label for="username" class="labels"><i class="fas fa-user"></i> Username: </label>
                             <input  class="form-control" id="username" type="text" name="username" value="<%= currentUser.username %>">
                         </div>
 
                         <div class="form-group">
-                            <label for="email" class="labels">Email: </label>
+                            <label for="email" class="labels"><i class="fas fa-envelope"></i> Email: </label>
                             <input  class="form-control" id="email" type="email" name="email" value="<%= currentUser.email %>">
                         </div>
 
                         <div class="form-group">
-                            <label for="password" class="labels">Password: </label>
+                            <label for="password" class="labels"><i class="fas fa-lock"></i> Password: </label>
                             <input  class="form-control" id="password" type="password" value="***********" disabled>
                             <small id="password" class="form-text text-muted"><a href="/forgot">Click here to reset your password</a></small>
                         </div>
                         
                         <input type="submit" class="mt-3 btn btn-primary" value="Save changes">
 
-                        <div class="mt-3 float-right">
+                        <div class="mt-3 float-sm-right">
                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteForm">Delete account</button>
                         </div>
                     </form>
@@ -60,7 +60,5 @@
         </div>
     </div>
 </div>
-
-git commit -m "add profile settings page"
 
 <%- include("../partials/footer") %>
