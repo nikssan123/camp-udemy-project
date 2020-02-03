@@ -98,6 +98,45 @@
     font-size: small;
 }
 
+#profilePic{
+    display: none;
+}
+
+#profile-image{
+    padding-top: 32px;
+}
+
+#accImage{
+    width: 100px;
+}
+
+#profilePicLabel{
+    width: wrap;
+}
+
+@media (min-width: 768px) { 
+
+    #profilePicLabel{
+        width: auto;
+    }
+
+    #accImage{
+        width: 20vw;
+    }
+}
+
+/* .forms{
+    width: 65%;
+    margin: 25px auto;
+}
+
+@media (min-width: 768px) { 
+
+    .forms{
+        width: 40%;
+        margin: 25px auto;
+    }
+} */
 
 /* Bellow code is for campground index page -> on sm page make the card class less streched */
 /* .campground-card{

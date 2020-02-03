@@ -5,10 +5,36 @@ const User = require("../models/user");
 const middleware = require("../middleware");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const multer = require("multer");
+const cloudinary = require("cloudinary");
 
 //setting up express-validator middleware
 const { check, validationResult } = require('express-validator');
 
+//Set up multer
+const storage = multer.diskStorage({
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + file.originalname);
+    }
+});
+
+const imageFilter = function(req, file, cb){
+    //accept only those image formats
+    if(!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)){
+        return cb(new Error("Only jpg|jpeg|png|gif files are allowed!"), false);
+    }
+
+    cb(null, true);
+}
+
+//Set up Cloudinary
+cloudinary.v2.config({
+    cloud_name: "nikssan123",
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const upload = multer({storage: storage, fileFilter: imageFilter});
 
 //root route
 router.get("/", (req, res)=>{
@@ -224,7 +250,7 @@ router.get("/settings",  middleware.isLoggedIn, (req, res) => {
     res.render("user/edit");
 });
 
-router.put("/settings", middleware.isLoggedIn, [
+router.put("/settings", upload.single('profilePic'), middleware.isLoggedIn, [
     check("username").trim().not().isEmpty(),
     check("email").isEmail()
 ], async (req, res) => {
@@ -233,6 +259,29 @@ router.put("/settings", middleware.isLoggedIn, [
     User.findOne({username: req.user.username}).then(async user => {
         user.username = req.body.username;
         user.email = req.body.email;
+
+        if(req.file){
+            if(user.profilePic !== "https://res.cloudinary.com/nikssan123/image/upload/v1580680721/profile_ir66l2.jpg"){
+                try{
+                    await cloudinary.v2.uploader.destroy(user.imageID);
+                }catch(err){
+                    req.flash("error", "Somehting went wrong!");
+                    res.redirect("/campgrounds");
+                }
+            }
+            await cloudinary.v2.uploader.upload(req.file.path).then(async result => {
+                user.profilePic = result.secure_url;
+                user.imageID = result.public_id;
+            }).catch(err => {
+                console.log({message: err.message});
+                if(err)
+                    req.flash("error", err.message);
+                else
+                    req.flash("error", "Something went wrong!");
+
+                res.redirect("/campgrounds");
+            });
+        }
 
         await user.save().then(() => {
             req.logIn(user, err => {
@@ -253,7 +302,16 @@ router.put("/settings", middleware.isLoggedIn, [
 });
 
 router.delete("/settings", middleware.isLoggedIn, (req, res) => {
-    User.findOneAndDelete({_id: req.user._id}).then(() => {
+    User.findOneAndDelete({_id: req.user._id}).then(async user => {
+        console.log(user);
+        if(req.user.profilePic !== "https://res.cloudinary.com/nikssan123/image/upload/v1580680721/profile_ir66l2.jpg"){
+            try{
+                await cloudinary.v2.uploader.destroy(user.imageID);
+            }catch(err){
+                req.flash("error", "Somehting went wrong!");
+                res.redirect("/campgrounds");
+            }
+        }
         req.flash("error", "Successfully deleted account!");
         res.redirect("/campgrounds");
     }).catch(err => {
