@@ -31,6 +31,7 @@ router.post("/", middleware.isLoggedIn ,(req, res) => {
             //add the user id and username association to the comment
             comment.author.id = req.user.id;
             comment.author.username = req.user.username;
+            comment.author.profilePic = req.user.profilePic;
             await comment.save();
             //add the comment to the campground
             campground.comments.push(comment);
