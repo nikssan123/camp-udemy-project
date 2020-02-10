@@ -1,0 +1,106 @@
+<%- include("../partials/header") %>
+<div class="container">
+
+    <div class="row">
+        <!-- User info section -->
+        <div class="col-12 col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <img class=" img-fluid" src="<%= user.profilePic %>" alt="profile picture" style="border-radius: 100%;">
+                    <p><strong><%= user.username %></strong></p>
+                    <% if(user.isAdmin){ %>
+                        <i class="far fa-circle"><em>Administrator</em></i>
+                    <% } %>
+                    <hr>
+                    <p><strong>Email: </strong><em><%= user.email ? user.email : "No email provided" %></em></p>
+                    <!-- <strong><a  title="Click to view followers" href="#followers" data-toggle="modal">Followers: </a></strong><span class="badge badge-secondary"></span> -->
+                    <p><strong>Followers: </strong><span class="badge badge-secondary"><%= followers.length %></span></p>
+                    <%  
+                        if(followers.length > 0){
+                            var isFollowing = false; 
+                            followers.forEach(follower => { 
+                                if(currentUser && follower.id === currentUser.id){
+                                    isFollowing = true;
+                                }
+                            });
+                        }
+                    %>
+                    <% if(currentUser && (currentUser.id !== user.id)){ %>
+                        <% if(isFollowing){ %>
+                            <a href="/user/unfollow/<%= user.id %>" class="btn btn-primary">Unfollow</a>
+                        <% }else{ %>
+                            <a href="/user/follow/<%= user.id %>" class="btn btn-primary">Follow</a>
+                        <% } %>
+
+                        <% if(currentUser && currentUser.isAdmin && !user.isAdmin){ %>
+                            <a class="mt-4 d-block" data-toggle="modal" href="#makeAdmin">Make admin</a>
+                        <% } %>
+                    <% } %>
+                    
+                </div>
+            </div>
+        </div>
+        <!-- Campgrounds section -->
+        <div class="col-12 col-md-8">
+            <div class="row text-center">
+                <% campgrounds.forEach(campground => { %>
+                    <div class="col-12 col-md-6">
+                        <div class="card mb-3">
+                            <img src="<%= campground.image %>" class="card-img-top" id="index-image" alt="index images">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= filter.clean(campground.name) %></h5>
+                                <a href="/campgrounds/<%= campground.id %>" class="btn btn-primary">More Info <i class="fas fa-info-circle"></i></a>
+                            </div>
+                        </div> 
+                    </div>
+                    
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="makeAdmin" tabindex="-1" role="dialog" aria-labelledby="makeAdminLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Make <%= user.username %> administrator</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to make <%= user.username %> administrator?</p>
+            </div>
+            <div class="modal-footer">
+                <form action="/user/makeAdmin?username=<%= user.username %>" method="post">
+                    <button class="btn btn-success">Yes</button>
+                </form>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- <div class="modal fade" id="followers" tabindex="-1" role="dialog" aria-labelledby="viewFollowers" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Followers of <%= user.username %></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<%- include("../partials/footer") %>

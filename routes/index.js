@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const User = require("../models/user");
+const Campground = require("../models/campground");
 const middleware = require("../middleware");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
@@ -318,6 +319,87 @@ router.delete("/settings", middleware.isLoggedIn, (req, res) => {
         console.log({message: err.message});
         req.flash("error", "Something went wrong!");
         res.redirect("/settings");
+    });
+});
+
+router.get("/user/:username", (req, res) => {
+    User.findOne().where("username").equals(req.params.username).populate("followers").exec().then( user => {
+        //find all campgrounds where the id of the author is equal to the user that was found
+        Campground.find().where("author.id").equals(user._id).exec().then(campgrounds => {
+            res.render("user/show", {user: user, campgrounds: campgrounds, followers: user.followers});
+        }).catch(err => {
+            console.log(err);
+            req.flash("error", "Something went wrong!");
+        res.redirect("/campgrounds");
+        });
+    }).catch(err => {
+        console.log(err);
+        req.flash("error", "Something went wrong!");
+        res.redirect("/campgrounds");
+    })
+});
+
+router.post("/user/makeAdmin",  middleware.isLoggedIn, (req,res) => {
+    const username = req.query.username;
+    User.findOne().where("username").equals(username).then(async user => {
+        user.isAdmin = true;
+        try{    
+            await user.save();
+        }catch(err){
+            console.log(err);
+            req.flash("error", "Something went wrong!");
+            res.redirect("/user/" + user.username);
+        }
+        
+        req.flash("success", "Succefully made " + user.username + " an admin!");
+        res.redirect("/user/" + user.username);
+
+    }).catch(err => {
+        console.log(err);
+        req.flash("error", "Something went wrong!");
+        res.redirect("/user/" + user.username);
+    });
+});
+
+router.get("/user/follow/:id", middleware.isLoggedIn, (req, res) => {
+    User.findById(req.params.id).populate("followers").then(user => {
+        let isFollowing = false;
+        user.followers.forEach(follower => {
+            if(follower.id === req.user.id)
+                isFollowing = true;
+        });
+        if(!isFollowing){
+            user.followers.push(req.user.id);
+            user.save().then(() => {
+                req.flash("success", "Successfully followed " + user.username + "!");
+                res.redirect("/user/" + user.username);
+            }).catch(err => {
+                console.log(err);
+                req.flash("error", "Something went wrong!");
+                res.redirect("/user/" + user.username);
+            });
+        }else{
+            req.flash("error", "You already follow that user!");
+            res.redirect("/user/" + user.username);
+        }
+        
+    }).catch(err => {
+        console.log(err);
+        req.flash("error", "Something went wrong!");
+        res.redirect("/campgrounds");
+    });
+});
+
+router.get("/user/unfollow/:id", (req, res) => {
+    User.findById(req.params.id).then(async user => {
+        user.followers.pull(req.user.id);
+        await user.save();
+        req.flash("success", "Successfully unfollowed " + user.username + "!");
+        res.redirect("/user/" + user.username);
+    }).catch(err => {
+        console.log(err);
+        req.flash("error", "Something went wrong!");
+        res.redirect("/campgrounds");
     });
 });
 

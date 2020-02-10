@@ -57,7 +57,7 @@ router.get("/",  async (req, res)=>{
     //limit the search with the page limit variable and skip to the start index
     await Campground.find({}).limit(limit).skip(startIndex).exec()
         .then(async allCampgrounds => {
-            //search in allCampgrounds array for name description and author propties
+            //search in allCampgrounds array for name, description and author propties
             const searcher = new FuzzySearch(allCampgrounds, ['name', 'description', 'author'], {
                 caseSensitive: false,
             });

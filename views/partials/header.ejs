@@ -43,7 +43,7 @@
                   <img class="" src="<%= currentUser.profilePic %>" width="30px" height="30px" style="border-radius: 50%;" alt="profile-image"> <%= currentUser.username %>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item" href="#"><i class="fas fa-user-alt"></i> Dashboard</a>
+                  <a class="dropdown-item" href="/user/<%= currentUser.username %>"><i class="fas fa-user-alt"></i> Dashboard</a>
                   <a class="dropdown-item" href="/settings"><i class="fas fa-cog"></i> Settings</a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
