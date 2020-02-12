@@ -17,6 +17,7 @@ const express        = require("express"),
 //Models
 const Campground       = require("./models/campground"),
     Comment            = require("./models/comment"),
+    Notification       = require("./models/notification"),
     User               = require("./models/user");
 //ROUTES
 const commentRoutes  = require("./routes/comments"),
@@ -41,6 +42,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(mOverride("_method"));
 app.use(express.static(__dirname + "/public"));
 app.use(flash());
+
 app.locals.moment = moment; // this makes moment available as a variable in every EJS page
 app.locals.filter = new Filter();  // makes the filter var available in every ejs file
 
@@ -107,8 +109,16 @@ passport.deserializeUser(User.deserializeUser());
 
 //middleware
 //define after passport init!
-app.use(function(req, res, next){
+app.use(async (req, res, next) => {
     res.locals.currentUser = req.user;
+    if(req.user){
+        try{
+            let user = await User.findById(req.user.id).populate("notifications", null, {isRead: false}).exec();
+            res.locals.notifications = user.notifications.reverse();
+        }catch(err){
+            console.log(err);
+        }
+    }
     res.locals.error = req.flash("error");
     res.locals.success = req.flash("success");
     next();

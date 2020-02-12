@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Campground = require("../models/campground");
+const Notification = require("../models/notification");
+const User = require("../models/user");
 const middleware = require("../middleware");
 const nodeGeocoder = require("node-geocoder");
 const FuzzySearch = require("fuzzy-search");
@@ -77,6 +79,7 @@ router.get("/",  async (req, res)=>{
         }).catch(err => {
             console.log({message: err.message});
         });
+    
 });
 
 //CREATE ROUTE
@@ -101,6 +104,8 @@ router.post("/", middleware.isLoggedIn, upload.single("imageFile"), (req, res)=>
         const lat = data[0].latitude;
         const lng = data[0].longitude;
         const location = data[0].formattedAddress;
+
+        
         
         //if there is a file provided by the user -> save the file -> else use the link
         if(req.file){
@@ -109,11 +114,13 @@ router.post("/", middleware.isLoggedIn, upload.single("imageFile"), (req, res)=>
                 imageID = result.public_id;
                 const newCampground = {name: name, price:price, image: image, imageID: imageID, description: description, location: location, lat: lat, lng: lng ,author: author};
                 await Campground.create(newCampground)
-                .then(campground => {
+                .then(async campground => {
+                    await createNotification(req.user, campground);
                     console.log("Newly added campground!");
                     console.log(campground);
                     req.flash("success", "Successfully added a new campground!");
                     res.redirect("/campgrounds/" + campground.id);
+                    
                 }).catch(err => {
                     console.log({message: err.message});
                     if(err)
@@ -126,7 +133,8 @@ router.post("/", middleware.isLoggedIn, upload.single("imageFile"), (req, res)=>
         }else{
             const newCampground = {name: name, price:price, image: image, imageID: undefined, description: description, location: location, lat: lat, lng: lng ,author: author};
             await Campground.create(newCampground)
-            .then(campground => {
+            .then(async campground => {
+                await createNotification(req.user, campground);
                 console.log("Newly added campground!");
                 console.log(campground);
                 req.flash("success", "Successfully added a new campground!");
@@ -263,6 +271,42 @@ router.post("/:id/like", middleware.isLoggedIn, (req, res) => {
     });
 });
 
+router.get("/:campID/:notID", async (req,res) => {
+    // const user  = User.findById(req.user.id).populate("notifications");
+    try{
+        const notification = await Notification.findById(req.params.notID);
+        notification.isRead = true;
+        await notification.save();
+        res.redirect("/campgrounds/" + req.params.campID);
+    }catch(err){
+        console.log(err);
+        req.flash("error", "Something went wrong!");
+        res.redirect("/campgrounds");
+    }
+    
+});
+
+// Functions
+async function createNotification(user, campground){
+    try{
+        const currentUser = await User.findById(user.id).populate("followers").exec();
+        console.log(currentUser);
+        const newNotitication = {
+            link: "/campgrounds/" + campground.id,
+            text: currentUser.username + " created a new campground!"
+        }
+        const notification = await Notification.create(newNotitication);
+        currentUser.followers.forEach(async follower => {
+            console.log(follower);
+            console.log(notification);
+            follower.notifications.push(notification);
+            follower.save();
+        });
+        
+    }catch(err){
+        console.log(err);
+    }
+}
 
 
 module.exports = router;

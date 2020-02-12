@@ -34,11 +34,32 @@
               <li class="nav-item <%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>"><a class="nav-link" href="/login">Login <i class="fas fa-sign-in-alt"></i></a></li>
               <li class="nav-item <%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>"><a class="nav-link" href="/register">Sing Up <i class="fas fa-user-plus"></i></a>
             <% }else { %>
-              <!-- <li class="nav-item"><a class="nav-link" href="#">Signed In As <%= currentUser.username %></a></li>
-              <li class="nav-item"><a class="nav-link" href="/logout">Logout <i class="fas fa-sign-out-alt"></i></a></li> -->
-              <li class="nav-item"><a class="nav-link disabled" href="#"><%= currentUser.isAdmin ? "Administrator account:" : "Signed In as:" %></a></li>
+              <li class="nav-item"><a class="nav-link disabled" href="#"><%= currentUser.isAdmin ? "Administrator account:" : "" %></a></li>
+              <!-- Notifications -->
               <li class="nav-item dropdown">
-                
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="fa-stack fa-1x">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-bell fa-stack-1x fa-inverse"></i>
+                    <span id="notification" class="badge badge-secondary"><%= notifications.length %></span>
+                  </span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <% if(notifications.length > 0) { %>
+                    <% notifications.forEach(notification => { %>
+                      <a class="dropdown-item" href="<%= notification.link %>/<%= notification.id %>"><%= notification.text %></a>
+                    <% }); %>
+
+                  <% }else{ %>
+                    <a class="dropdown-item" href="#"><em>No notifications</em></a>
+                  <% } %>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#">View All Past Notifications</a>
+                </div>
+              </li>
+
+              
+              <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <img class="" src="<%= currentUser.profilePic %>" width="30px" height="30px" style="border-radius: 50%;" alt="profile-image"> <%= currentUser.username %>
                 </a>
@@ -49,6 +70,8 @@
                   <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </div>
               </li>
+              
+              
             <% } %>
           </ul>
         </div>
@@ -66,3 +89,4 @@
         </div>
       <% } %>
     </div>
+

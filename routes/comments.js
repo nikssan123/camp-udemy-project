@@ -3,6 +3,8 @@ const express = require("express");
 const router = express.Router({mergeParams: true});
 const Campground = require("../models/campground");
 const Comment = require("../models/comment");
+const User = require("../models/user");
+const Notification = require("../models/notification");
 const middleware = require("../middleware");
 
 
@@ -28,17 +30,38 @@ router.post("/", middleware.isLoggedIn ,(req, res) => {
         //create new comment
         Comment.create(req.body.comment)
         .then(async comment => {
-            //add the user id and username association to the comment
-            comment.author.id = req.user.id;
-            comment.author.username = req.user.username;
-            comment.author.profilePic = req.user.profilePic;
-            await comment.save();
-            //add the comment to the campground
-            campground.comments.push(comment);
-            await campground.save();
-            req.flash("success", "Successfully added comment!");
-            //redirect 
-            res.redirect("/campgrounds/" + req.params.id);
+            try{  
+                const campUser = await User.findById(campground.author.id);
+                if(campUser.id !== req.user.id){
+                    const newNotification = {
+                        text: req.user.username + " commented your post!",
+                        link: "/campgrounds/" + campground.id
+                    }
+                    const notification = await Notification.create(newNotification);
+    
+                    
+                    campUser.notifications.push(notification);
+                    await campUser.save();
+                }
+               
+
+                //add the user id and username association to the comment
+                comment.author.id = req.user.id;
+                comment.author.username = req.user.username;
+                comment.author.profilePic = req.user.profilePic;
+                await comment.save();
+                //add the comment to the campground
+                campground.comments.push(comment);
+                await campground.save();
+                req.flash("success", "Successfully added comment!");
+                //redirect 
+                res.redirect("/campgrounds/" + req.params.id);
+            }catch(err){
+                console.log(err);
+                req.flash("error", "Something went wrong!");
+                res.redirect("/campgrounds/" + req.params.id);
+            }
+            
         }).catch(err => {
             console.log({message: err});
             console.log(err);

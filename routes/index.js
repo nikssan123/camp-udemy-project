@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const User = require("../models/user");
 const Campground = require("../models/campground");
+const Notification = require("../models/notification");
 const middleware = require("../middleware");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
@@ -251,6 +252,7 @@ router.get("/settings",  middleware.isLoggedIn, (req, res) => {
     res.render("user/edit");
 });
 
+//USER UPDATE
 router.put("/settings", upload.single('profilePic'), middleware.isLoggedIn, [
     check("username").trim().not().isEmpty(),
     check("email").isEmail()
@@ -302,6 +304,7 @@ router.put("/settings", upload.single('profilePic'), middleware.isLoggedIn, [
     
 });
 
+//USER DESTROY
 router.delete("/settings", middleware.isLoggedIn, (req, res) => {
     User.findOneAndDelete({_id: req.user._id}).then(async user => {
         console.log(user);
@@ -322,6 +325,7 @@ router.delete("/settings", middleware.isLoggedIn, (req, res) => {
     });
 });
 
+// USER SHOW 
 router.get("/user/:username", (req, res) => {
     User.findOne().where("username").equals(req.params.username).populate("followers").exec().then( user => {
         //find all campgrounds where the id of the author is equal to the user that was found
@@ -362,22 +366,34 @@ router.post("/user/makeAdmin",  middleware.isLoggedIn, (req,res) => {
 });
 
 router.get("/user/follow/:id", middleware.isLoggedIn, (req, res) => {
-    User.findById(req.params.id).populate("followers").then(user => {
+    User.findById(req.params.id).populate("followers").then(async user => {
+        
         let isFollowing = false;
         user.followers.forEach(follower => {
             if(follower.id === req.user.id)
                 isFollowing = true;
         });
         if(!isFollowing){
-            user.followers.push(req.user.id);
-            user.save().then(() => {
-                req.flash("success", "Successfully followed " + user.username + "!");
-                res.redirect("/user/" + user.username);
-            }).catch(err => {
+            const newNotification = {
+                text: req.user.username + " followed you!",
+                link: "/user/" + req.user.username
+            }
+            try{
+                const notification = await Notification.create(newNotification);
+                user.notifications.push(notification);
+                user.followers.push(req.user.id);
+
+                user.save().then(() => {
+                    req.flash("success", "Successfully followed " + user.username + "!");
+                    res.redirect("/user/" + user.username);
+                }).catch(err => {
+                    console.log(err);
+                    req.flash("error", "Something went wrong!");
+                    res.redirect("/user/" + user.username);
+                });
+            }catch(err){
                 console.log(err);
-                req.flash("error", "Something went wrong!");
-                res.redirect("/user/" + user.username);
-            });
+            }            
         }else{
             req.flash("error", "You already follow that user!");
             res.redirect("/user/" + user.username);
@@ -403,6 +419,19 @@ router.get("/user/unfollow/:id", (req, res) => {
     });
 });
 
+//handle notification
+router.get("/user/:username/:notID", async (req, res) => {
+    try{
+        const notification = await Notification.findById(req.params.notID);
+        notification.isRead = true;
+        await notification.save();
+        res.redirect("/user/" + req.params.username);
+    }catch(err){
+        console.log(err);
+        req.flash("error", "Something went wrong!");
+        res.redirect("/campgrounds");
+    }
+});
 
 router.get("/app-ads.txt", (req,res) => {
     res.sendFile(__dirname + "/app-ads.txt");

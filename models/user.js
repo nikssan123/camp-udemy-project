@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const passportMongoose = require("passport-local-mongoose");
+const Notification = require("../models/notification");
 
 const userSchema = new mongoose.Schema({
     username:  {
@@ -25,6 +26,10 @@ const userSchema = new mongoose.Schema({
     followers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
+    }],
+    notifications: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Notification"
     }], 
     resetPasswordToken: String,
     resetPasswordExpires: Date

@@ -13,8 +13,6 @@
                     <% } %>
                     <hr>
                     <p><strong>Email: </strong><em><%= user.email ? user.email : "No email provided" %></em></p>
-                    <!-- <strong><a  title="Click to view followers" href="#followers" data-toggle="modal">Followers: </a></strong><span class="badge badge-secondary"></span> -->
-                    <p><strong>Followers: </strong><span class="badge badge-secondary"><%= followers.length %></span></p>
                     <%  
                         if(followers.length > 0){
                             var isFollowing = false; 
@@ -27,17 +25,20 @@
                     %>
                     <% if(currentUser && (currentUser.id !== user.id)){ %>
                         <% if(isFollowing){ %>
-                            <a href="/user/unfollow/<%= user.id %>" class="btn btn-primary">Unfollow</a>
+                            <p><a href="/user/unfollow/<%= user.id %>" class="btn btn-primary">Unfollow</a></p>
                         <% }else{ %>
-                            <a href="/user/follow/<%= user.id %>" class="btn btn-primary">Follow</a>
+                            <p><a href="/user/follow/<%= user.id %>" class="btn btn-primary">Follow</a></p>
                         <% } %>
+                    <% } %>
 
-                        <% if(currentUser && currentUser.isAdmin && !user.isAdmin){ %>
-                            <a class="mt-4 d-block" data-toggle="modal" href="#makeAdmin">Make admin</a>
-                        <% } %>
+                    <strong><a  title="Click to view followers" href="#followers" data-toggle="modal">Followers: </a></strong><span class="badge badge-secondary"><%= followers.length %></span>
+                            
+                    <% if(currentUser && currentUser.isAdmin && !user.isAdmin){ %>
+                        <a class="mt-4 d-block" data-toggle="modal" href="#makeAdmin">Make admin</a>
                     <% } %>
                     
                 </div>
+
             </div>
         </div>
         <!-- Campgrounds section -->
@@ -84,7 +85,7 @@
 </div>
 
 
-<!-- <div class="modal fade" id="followers" tabindex="-1" role="dialog" aria-labelledby="viewFollowers" aria-hidden="true">
+<div class="modal fade" id="followers" tabindex="-1" role="dialog" aria-labelledby="viewFollowers" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -94,13 +95,25 @@
                 </button>
             </div>
             <div class="modal-body">
-               
+                <p><strong>Followed by:</strong></p>
+                <% if(followers.length === 0) { %>
+                    <em>No followers yet</em>
+                <% }else{ %>
+                    <% followers.forEach(follower => { %>
+                        <div class="row">
+                            <div class="col-12">
+                                <i class="far fa-user mr-2"></i><a href="/user/<%= follower.username %>"><%= follower.username %></a> 
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } %>
+                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
-</div> -->
+</div>
 
 <%- include("../partials/footer") %>
