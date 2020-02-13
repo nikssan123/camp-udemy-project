@@ -49,12 +49,11 @@
                     <% notifications.forEach(notification => { %>
                       <a class="dropdown-item" href="<%= notification.link %>/<%= notification.id %>"><%= notification.text %></a>
                     <% }); %>
-
                   <% }else{ %>
                     <a class="dropdown-item" href="#"><em>No notifications</em></a>
                   <% } %>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">View All Past Notifications</a>
+                  <a class="dropdown-item" href="#pastNotifications" data-toggle="modal">View All Past Notifications</a>
                 </div>
               </li>
 
@@ -90,3 +89,33 @@
       <% } %>
     </div>
 
+
+<!-- Modal past notifications -->
+<div class="modal fade" id="pastNotifications" tabindex="-1" role="dialog" aria-labelledby="showPastNotifications" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title"><i class="fa fa-bell"></i> Past Notifications: </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+            <ul class="list-group">
+              <% if(currentUser && allNotifications){ %>
+                <% if(allNotifications.length > 0){ %>
+                  <% allNotifications.forEach(notification => { %>
+                    <li class="list-group-item"><a href="<%= notification.link %>/<%= notification.id %>"><%= notification.text %></a></li>
+                  <% }); %>
+                <% }else { %>
+                    <li class="list-group-item"><em>No notifications</em></li>
+                <% } %>
+              <% } %>
+            </ul>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
+      </div>
+  </div>
+</div>

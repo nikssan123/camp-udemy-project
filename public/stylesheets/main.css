@@ -131,7 +131,9 @@
     top: -50%;
 }
 
-
+.list-group-item a{
+    color: black;
+}
 
 /* .forms{
     width: 65%;

@@ -114,7 +114,9 @@ app.use(async (req, res, next) => {
     if(req.user){
         try{
             let user = await User.findById(req.user.id).populate("notifications", null, {isRead: false}).exec();
+            let u = await User.findById(req.user.id).populate("notifications").exec();
             res.locals.notifications = user.notifications.reverse();
+            res.locals.allNotifications = u.notifications.reverse();
         }catch(err){
             console.log(err);
         }
@@ -142,6 +144,10 @@ app.use("/campgrounds/:id/comments", commentRoutes);
 
 
 // ==========================
+app.get("/privacy-policy", (req, res) => {
+    res.sendFile(__dirname + "/privacy-policy.html");
+});
+
 app.get("*", (req, res)=>{
     res.send("Not Found");
 });
