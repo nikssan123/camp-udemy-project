@@ -1,6 +1,5 @@
 <%- include("../partials/header") %>
 <div class="container">
-
     <div class="row justify-content-center align-content-center sign-form">
         <div class="col-12 col-lg-8 text-center">
             <h1 >Login</h1>
@@ -13,15 +12,26 @@
                         <input class="form-control" type="password" name="password" placeholder="Password" required>
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-primary btn-block">Login!</button>
+                        <button type="submit" class="btn btn-primary btn-block">Login!</button>
                     </div>
+                    <hr>
+                    <div class="form-group">
+                        <a class="btn btn-outline-dark btn-block" href="/login/google" role="button" >
+                            <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                            Login with Google
+                        </a>
+                    </div>
+                    
                 </form>
-                <a class="float-left" href="/forgot">Forgot your password?</a>
+                <a class="float-left d-block" href="/forgot">Forgot your password?</a>
+                <br>
                 <a class="float-left" href="/register">Don't have an account?</a>
+                
             </div>
         </div>
         
     </div>
+    
 </div>
 
 <%- include("../partials/footer") %>

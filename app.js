@@ -8,6 +8,7 @@ const express        = require("express"),
     passport         = require("passport"),
     LocalStrategy    = require("passport-local"),
     FacebookStrategy = require("passport-facebook"),
+    GoogleStrategy = require('passport-google-oauth20').Strategy,
     passportMongoose = require("passport-local-mongoose"),
     expressSession   = require("express-session"),
     flash            = require("connect-flash"),
@@ -62,50 +63,46 @@ passport.use(new LocalStrategy(User.authenticate()));
 // ==============================================================================
 // creating the Facebook strategy
 passport.use(new FacebookStrategy({
-        clientID: process.env.FACEBOOK_APP_ID,
-        clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: "/return"
-    },
-    function(accessToken, refreshToken, profile, cb) {
-        User.findOne({"facebook.id": profile.id})
-        .then(user => {
-            if(user)
-                return cb(null, user);
-            else{
-                const newUser = {
-                    username: profile.name.givenName,
-                    facebook: {
-                        id: profile.id,
-                        email: "fd"
-                    }
-                }
-                User.create(newUser).then(user => {
-                    cb(null, user);
-                }).catch(err => {
-                    cb(err);
-                });
-            }
-        }).catch(err => {
-            console.log(err);
-            return cb(err);
-        });
-    }
-));
+    clientID: process.env.FACEBOOK_APP_ID,
+    clientSecret: process.env.FACEBOOK_APP_SECRET,
+    callbackURL: "http://localhost:3000/auth/facebook/callback"
+ }, function(accessToken, refreshToken, profile, cb) {
+    console.log(profile);
+}));
 // ==============================================================================
+
+//Google strategy for OAuth2
+// ==============================================================================
+passport.use(new GoogleStrategy({
+    clientID: process.env.G_CLIENT_ID_OAUTH,
+    clientSecret: process.env.G_CLIENT_SECRET_OAUTH,
+    callbackURL: "https://desolate-sierra-95373.herokuapp.com/auth/google/callback"
+ }, async function(accessToken, refreshToken, profile, cb) {
+    try{
+        const user  = await User.findOne({username: profile.displayName}).exec();
+        if(!user){
+            const newUserObj = {
+                username: profile.displayName,
+                email: profile.emails[0].value,
+                profilePic: profile.photos[0].value
+            }
+            const newUser =  await User.create(newUserObj);
+            return cb(null, newUser);
+        }else{
+            return cb(null, user);
+        }
+    }catch(err){
+        console.log(err);
+
+        return (err, null);
+    }
+    
+}));
 
 //encoding
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-//==============================================================================
-passport.serializeUser(function(user, cb) {
-    cb(null, user);
-  });
-  
-  passport.deserializeUser(function(obj, cb) {
-    cb(null, obj);
-  });
-//============================================================================== 
 
 //middleware
 //define after passport init!
@@ -134,13 +131,15 @@ app.use("/campgrounds/:id/comments", commentRoutes);
 //==============================================================================
 app.get("/login/facebook", passport.authenticate("facebook"));
 
-app.get("/return", passport.authenticate("facebook", {
-    failureRedirect: "/login"
+app.get("/auth/facebook/callback", passport.authenticate("facebook", {
+    failureRedirect: "/login",
+    failureFlash: "Something went wrong!"
 }), (req, res) => {
     console.log("FACEBOK");
     res.redirect("/campgrounds");
 });
 //==============================================================================
+
 
 
 // ==========================

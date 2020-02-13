@@ -105,6 +105,17 @@ router.post("/login", passport.authenticate("local", {
     
 });
 
+router.get('/login/google', passport.authenticate('google', {scope: ['profile', 'https://www.googleapis.com/auth/userinfo.email'] }));
+
+router.get('/auth/google/callback', passport.authenticate('google', {
+    failureRedirect: '/login',
+    failureFlash: "Something went wrong",   
+    successFlash: "Welcome back"
+}), (req, res) => {
+    // Successful authentication, redirect home.
+    res.redirect('/campgrounds');
+});
+
 //Logout
 router.get("/logout", (req, res) => {
     req.logout();
