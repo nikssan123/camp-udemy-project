@@ -7,7 +7,7 @@ const express        = require("express"),
     seedDB           = require("./seeds"),
     passport         = require("passport"),
     LocalStrategy    = require("passport-local"),
-    // FacebookStrategy = require("passport-facebook"),
+    FacebookStrategy = require("passport-facebook"),
     passportMongoose = require("passport-local-mongoose"),
     expressSession   = require("express-session"),
     flash            = require("connect-flash"),
@@ -59,52 +59,52 @@ app.use(passport.initialize());
 app.use(passport.session());
 //creating the Local Strategy
 passport.use(new LocalStrategy(User.authenticate()));
-//==============================================================================
-//creating the Facebook strategy
-// passport.use(new FacebookStrategy({
-//         clientID: process.env.FACEBOOK_APP_ID,
-//         clientSecret: process.env.FACEBOOK_APP_SECRET,
-//         callbackURL: "/return"
-//     },
-//     function(accessToken, refreshToken, profile, cb) {
-//         User.findOne({"facebook.id": profile.id})
-//         .then(user => {
-//             if(user)
-//                 return cb(null, user);
-//             else{
-//                 const newUser = {
-//                     username: profile.name.givenName,
-//                     facebook: {
-//                         id: profile.id,
-//                         email: "fd"
-//                     }
-//                 }
-//                 User.create(newUser).then(user => {
-//                     cb(null, user);
-//                 }).catch(err => {
-//                     cb(err);
-//                 });
-//             }
-//         }).catch(err => {
-//             console.log(err);
-//             return cb(err);
-//         });
-//     }
-// ));
-//==============================================================================
+// ==============================================================================
+// creating the Facebook strategy
+passport.use(new FacebookStrategy({
+        clientID: process.env.FACEBOOK_APP_ID,
+        clientSecret: process.env.FACEBOOK_APP_SECRET,
+        callbackURL: "/return"
+    },
+    function(accessToken, refreshToken, profile, cb) {
+        User.findOne({"facebook.id": profile.id})
+        .then(user => {
+            if(user)
+                return cb(null, user);
+            else{
+                const newUser = {
+                    username: profile.name.givenName,
+                    facebook: {
+                        id: profile.id,
+                        email: "fd"
+                    }
+                }
+                User.create(newUser).then(user => {
+                    cb(null, user);
+                }).catch(err => {
+                    cb(err);
+                });
+            }
+        }).catch(err => {
+            console.log(err);
+            return cb(err);
+        });
+    }
+));
+// ==============================================================================
 
 //encoding
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 //==============================================================================
-// passport.serializeUser(function(user, cb) {
-//     cb(null, user);
-//   });
+passport.serializeUser(function(user, cb) {
+    cb(null, user);
+  });
   
-//   passport.deserializeUser(function(obj, cb) {
-//     cb(null, obj);
-//   });
+  passport.deserializeUser(function(obj, cb) {
+    cb(null, obj);
+  });
 //============================================================================== 
 
 //middleware
@@ -130,16 +130,16 @@ app.use(async (req, res, next) => {
 app.use("/", indexRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
-
+ 
 //==============================================================================
-// app.get("/login/facebook", passport.authenticate("facebook"));
+app.get("/login/facebook", passport.authenticate("facebook"));
 
-// app.get("/return", passport.authenticate("facebook", {
-//     failureRedirect: "/login"
-// }), (req, res) => {
-//     console.log("FACEBOK");
-//     res.redirect("/campgrounds");
-// });
+app.get("/return", passport.authenticate("facebook", {
+    failureRedirect: "/login"
+}), (req, res) => {
+    console.log("FACEBOK");
+    res.redirect("/campgrounds");
+});
 //==============================================================================
 
 

@@ -32,11 +32,11 @@ const userSchema = new mongoose.Schema({
         ref: "Notification"
     }], 
     resetPasswordToken: String,
-    resetPasswordExpires: Date
-    // facebook: {
-    //     id: String,
-    //     email: String
-    // }
+    resetPasswordExpires: Date,
+    facebook: {
+        id: String,
+        email: String
+    }
 });
 
 userSchema.plugin(passportMongoose);
