@@ -65,9 +65,32 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: "https://desolate-sierra-95373.herokuapp.com/auth/facebook/callback"
- }, function(accessToken, refreshToken, profile, cb) {
-    console.log(profile);
+    callbackURL: "/auth/facebook/callback",
+    profileFields: ['emails', 'name', 'displayName', 'photos']
+ }, async (accessToken, refreshToken, profile, cb) => {
+    try{
+        const user  = await User.findOne({"facebook.id": profile.id}).exec();
+        if(!user){
+            let email = undefined;
+            if(profile.emails){
+                email = profile.emails[0].value;
+            }
+            const newUserObj = {
+                "facebook.id": profile.id,
+                username: profile.displayName,
+                email: email,
+                profilePic: profile.photos[0].value
+            }
+            const newUser =  await User.create(newUserObj);
+            return cb(null, newUser);
+        }else{
+            return cb(null, user);
+        }
+    }catch(err){
+        console.log(err);
+
+        return (err, null);
+    }
 }));
 // ==============================================================================
 
@@ -76,14 +99,19 @@ passport.use(new FacebookStrategy({
 passport.use(new GoogleStrategy({
     clientID: process.env.G_CLIENT_ID_OAUTH,
     clientSecret: process.env.G_CLIENT_SECRET_OAUTH,
-    callbackURL: "https://desolate-sierra-95373.herokuapp.com/auth/google/callback"
- }, async function(accessToken, refreshToken, profile, cb) {
+    callbackURL: "/auth/google/callback"
+ }, async (accessToken, refreshToken, profile, cb) => {
     try{
-        const user  = await User.findOne({username: profile.displayName}).exec();
+        const user  = await User.findOne({"google.id": profile.id}).exec();
         if(!user){
+            let email = undefined;
+            if(profile.emails){
+                email = profile.emails[0].value;
+            }
             const newUserObj = {
+                "google.id": profile.id,
                 username: profile.displayName,
-                email: profile.emails[0].value,
+                email: email,
                 profilePic: profile.photos[0].value
             }
             const newUser =  await User.create(newUserObj);
@@ -129,13 +157,13 @@ app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
  
 //==============================================================================
-app.get("/login/facebook", passport.authenticate("facebook"));
+app.get("/login/facebook", passport.authenticate("facebook", { scope : ['email'] }));
 
 app.get("/auth/facebook/callback", passport.authenticate("facebook", {
     failureRedirect: "/login",
-    failureFlash: "Something went wrong!"
+    failureFlash: "Something went wrong!",   
+    successFlash: "Welcome back!"
 }), (req, res) => {
-    console.log("FACEBOK");
     res.redirect("/campgrounds");
 });
 //==============================================================================

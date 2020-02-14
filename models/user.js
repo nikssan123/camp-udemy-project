@@ -34,8 +34,10 @@ const userSchema = new mongoose.Schema({
     resetPasswordToken: String,
     resetPasswordExpires: Date,
     facebook: {
-        id: String,
-        email: String
+        id: String
+    },
+    google: {
+        id: String
     }
 });
 

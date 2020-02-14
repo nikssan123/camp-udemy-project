@@ -135,6 +135,13 @@
     color: black;
 }
 
+.btn-fb{
+    background-color: #3b5998;
+    outline: none;
+    color: white;
+    border-color: black;
+}
+
 /* .forms{
     width: 65%;
     margin: 25px auto;

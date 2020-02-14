@@ -109,10 +109,10 @@ router.get('/login/google', passport.authenticate('google', {scope: ['profile', 
 
 router.get('/auth/google/callback', passport.authenticate('google', {
     failureRedirect: '/login',
-    failureFlash: "Something went wrong",   
-    successFlash: "Welcome back"
+    failureFlash: "Something went wrong!",   
+    successFlash: "Welcome back!"
 }), (req, res) => {
-    // Successful authentication, redirect home.
+    // Successful authentication
     res.redirect('/campgrounds');
 });
 
