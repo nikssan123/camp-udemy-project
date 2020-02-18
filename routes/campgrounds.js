@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Campground = require("../models/campground");
+const Comment = require("../models/comment");
+const Review = require("../models/review");
 const Notification = require("../models/notification");
 const User = require("../models/user");
 const middleware = require("../middleware");
@@ -160,8 +162,11 @@ router.get("/new", middleware.isLoggedIn ,(req, res)=>{
 router.get("/:id", (req, res)=>{
     let id = req.params.id;
     //.populate("comments").exec() will populate the comments array of the Campground object
-    Campground.findById(id).populate("comments likes").exec()
+    Campground.findById(id).populate("comments likes reviews").exec()
     .then(campground => {
+        campground.comments.reverse();
+        campground.likes.reverse();
+        campground.reviews.reverse();
         res.render("campgrounds/show", {campground: campground});
     }).catch(err => {
         console.log({message: err.message});
@@ -228,8 +233,9 @@ router.put("/:id", middleware.checkCampgroundOwnership,  upload.single("imageFil
 
 //DESTROY ROUTE
 router.delete("/:id", middleware.checkCampgroundOwnership, (req, res) => {
-    Campground.findByIdAndRemove(req.params.id)
+    Campground.findById(req.params.id)
     .then(async campground => {
+        
         if(campground.imageID){
             try{
                 await cloudinary.v2.uploader.destroy(campground.imageID);
@@ -238,8 +244,21 @@ router.delete("/:id", middleware.checkCampgroundOwnership, (req, res) => {
                 res.redirect("/campgrounds");
             }
         }
-        req.flash("success", "Successfully deleted the campground!");
-        res.redirect("/campgrounds");
+        //FIX
+        //Does not delete comment and reviews associated with that campground!!!
+        try{
+            Comment.deleteMany({id: {$in: campground.comments}}).then(() => {
+                Review.deleteMany({id: {$in: campground.reviews}}).then(async ()=> {
+                    await campground.remove();
+                    req.flash("success", "Successfully deleted the campground!");
+                    res.redirect("/campgrounds");
+                });
+            });
+        }catch(err){
+            console.log(err);
+            req.flash("error", "Something went wrong!");
+            res.redirect("back");
+        }
     }).catch(err => {
         console.log({message: err.message});
         res.redirect("/campgrounds");

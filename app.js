@@ -23,7 +23,8 @@ const Campground       = require("./models/campground"),
 //ROUTES
 const commentRoutes  = require("./routes/comments"),
     campgroundRoutes = require("./routes/campgrounds"),
-    indexRoutes      = require("./routes/index");
+    indexRoutes      = require("./routes/index"),
+    reviewsRoutes    = require("./routes/reviews");
 
 
 // seedDB();
@@ -42,6 +43,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(mOverride("_method"));
 app.use(express.static(__dirname + "/public"));
+app.use("/public", express.static('public'))
 app.use(flash());
 
 app.locals.moment = moment; // this makes moment available as a variable in every EJS page
@@ -155,6 +157,7 @@ app.use(async (req, res, next) => {
 app.use("/", indexRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
+app.use("/campgrounds/:id/reviews", reviewsRoutes);
  
 //==============================================================================
 app.get("/login/facebook", passport.authenticate("facebook", { scope : ['email'] }));

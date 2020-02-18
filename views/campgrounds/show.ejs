@@ -1,16 +1,30 @@
 <%- include("../partials/header") %>
+<!-- for the star styles -->
+<link rel="stylesheet" href="../../public/stylesheets/starrr.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
 
 <!-- Use filter.clean() method everywhere where user input must be sanitized for "bad-words" - passed from the app.js -->
 
 <div class="container">
     <div class="row">
         <div class="col-md-3">
-            <!-- <p class="lead">Yelp Camp</p> -->
-            <!-- <div class="list-group">
-                <li class="list-group-item active">Info 1</li>
-                <li class="list-group-item">Info 2</li>
-                <li class="list-group-item">Info 3</li>
-            </div> -->
+            <p class="lead"><i class="far fa-star"></i> Ratings: </p>
+            <div class="list-group mb-3" >
+                <% if(campground.reviews.length == 0){ %>
+                    <li class="list-group-item"><em>No reviews yet</em></li>
+                <% } %>
+                <% for(let i = 0; i < 4; i++){ %>
+                    <% if(campground.reviews[i]) { %>
+                        <li class="list-group-item scroll">
+                            <img src="<%= campground.reviews[i].author.profilePic %>" width="20px">
+                            <strong><%= campground.reviews[i].author.username %> -</strong>
+                            <%- '<span class="fa fa-star checked"></span>'.repeat(campground.reviews[i].rating) %><%- '<span class="fa fa-star"></span>'.repeat(5 - campground.reviews[i].rating) %>
+                            <p class="mb-0"><em><%= campground.reviews[i].text %></em></p>
+                        </li>
+                    <% } %>
+                <% } %>
+                <li class="list-group-item active"><a href="#" class="scroll">Add a new review</a></li>
+            </div>
             <div id="map" class="mt-0 d-none d-md-block"></div>
         </div>
 
@@ -66,6 +80,7 @@
             <!-- Comment section -->
             <div class="card">
                 <div class="card-body">
+                    <h4>Comment section: </h4>
                     <div class="text-right">
                         <!-- <a class="btn btn-success" href="/campgrounds/<%= campground.id %>/comments/new">Add New Comment</a> -->
                         <a class="btn btn-success" href="#add-form" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="add-form">Add New Comment <i class="fas fa-comment-medical"></i></a>
@@ -104,7 +119,6 @@
                         <% i++; %>
                         <div class="row">
                             <div class="col-md-12">
-                                
                                 <strong><img src="<%= comment.author.profilePic %>" width="30px" height="30px" style="border-radius: 50%;" alt="profile-image"> <a href="/user/<%= comment.author.username %>"><%= comment.author.username %></a> </strong>
                                 <span class="float-right"><%= moment(comment.date).fromNow() %></span>
                                 <p class="mb-0"><%= filter.clean(comment.text) %></p>
@@ -140,6 +154,111 @@
                     <% }); %>
                 </div>
             </div> <!-- comment section card closing -->
+
+            <!-- Ratings section -->
+            <div class="card mt-5">
+                <div class="card-body" id="reviewSection">
+                    <span class="fa fa-star <% if (campground.rating > 0.5) { %> checked <% } %>"></span>
+                    <span class="fa fa-star <% if (campground.rating > 1.5) { %> checked <% } %>"></span>
+                    <span class="fa fa-star <% if (campground.rating > 2.5) { %> checked <% } %>"></span>
+                    <span class="fa fa-star <% if (campground.rating > 3.5) { %> checked <% } %>"></span>
+                    <span class="fa fa-star <% if (campground.rating > 4.5) { %> checked <% } %>"></span>
+
+                    <em>(total reviews: <%= campground.reviews.length %>)</em>
+                    <p>
+                        Current campground rating: <strong><%= campground.rating.toFixed(2) %></strong>
+                    </p>
+                    <p><h4>Latest reviews for this campground:</h4></p>
+                    
+                    <div class=" text-right">
+                        <a class="btn btn-outline-dark" href="#add-rating-form" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="add-rating-form">Add New Review <i class="fas fa-star"></i></a>
+                    </div>
+                    
+
+                    <!-- Add review collapsed section -->
+                    <div id="add-rating-form" class="collapse">
+                        <div class="card mt-2">
+                            <div class="card-body add-rating-form pb-0">
+                                <% if(currentUser) { %>
+                                    <h5 class="mb-3"><i class="fas fa-star"></i> Give your review</h5>
+                                    <form action="/campgrounds/<%= campground.id %>/reviews" method="POST">
+                                        <div class="form-group">
+                                            <input class="form-control" type="text" value="<%= currentUser.username %>" disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <textarea class="form-control"  name="text" placeholder="Your review..." rows="5"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <div class='starrr'></div>
+                                                <input class="star-input d-none" type="text" name="rating">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-outline-dark btn-md" type="submit">Review <i class="fas fa-plus"></i></button>
+                                        </div>
+                                    </form>
+                                <% } else {%>
+                                    <p class="warning-message">You need to be logged in to do that! <a href="/login">Click here to login</a></p>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div> <!-- Closing the add-rating-form div -->
+                    
+                    <hr>
+
+                    <!-- Show reviews -->
+                    <% if(!campground.reviews.length) { %>
+                        <p class="text-center"><em>No reviews yet</em></p>
+                    <% } %>
+                    <!-- simulated a for loop in a for each loop with the bellow variable which is used for the toggle edit button -> knows exactly which form to toggle -->
+                    <% let j = 0; %>
+                    <% campground.reviews.forEach(review => { %>
+                        <% j++; %>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <strong><img src="<%= review.author.profilePic %>" width="30px" height="30px" style="border-radius: 50%;" alt="profile-image"> <a href="/user/<%= review.author.username %>"><%= review.author.username %></a> </strong>
+                                <%- '<span class="fa fa-star checked"></span>'.repeat(review.rating) %><%- '<span class="fa fa-star"></span>'.repeat(5 - review.rating) %>
+                                <span class="float-right"><%= moment(review.date).fromNow() %></span>
+                                <p class="mb-0"><%= filter.clean(review.text) %></p>
+
+                                <!-- Forms -->
+                                <% if(currentUser && (review.author.id.equals(currentUser.id) || currentUser.isAdmin)){ %>
+                                    <div class="float-right">
+                                        <a class="btn btn-sm btn-warning" href="#edit-review-form-<%= j %>" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="edit-form-<%= j %>">Edit <i class="fas fa-edit"></i></a>
+                                        <form class="delete-form" action="/campgrounds/<%= campground.id %>/reviews/<%= review.id %>?_method=DELETE" method="POST">
+                                            <button  class="btn btn-sm btn-danger">Delete <i class="fas fa-trash-alt"></i></button>
+                                        </form>
+                                    </div>
+                                    <!-- Edit form - collapsed -->
+                                    <div class="collapse mt-5" id="edit-review-form-<%= j %>">
+                                        <div class="card">
+                                            <div class="card-body edit-form pb-0">
+                                                <h5 class="mb-3"><i class="fas fa-edit"></i>Edit your review</h5>
+                                                <form action="/campgrounds/<%= campground.id %>/reviews/<%= review.id %>?_method=PUT" method="POST">
+                                                    <div class="form-group">
+                                                        <textarea class="form-control"  name="review[text]" rows="5"><%= review.text %></textarea>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="form-group">
+                                                            <div class='starrr'></div>
+                                                            <input class="star-input d-none" type="text" name="review[rating]">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-sm btn-warning">Edit</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <hr>
+                    <% }); %>
+                </div>
+            </div>
         </div> <!-- main content closing -->
     </div> <!-- .row closing -->
 </div> <!-- .container closing -->
@@ -177,6 +296,23 @@
     </div>
 </div>
 
+<!-- starr jQuery extension -->
+<script src="../../public/scripts/starrr.js"></script>
+<!-- Star display script jQuery starr -->
+<script>
+    $('.starrr').starrr();
+    $('.starrr').on('starrr:change', function(e, value){
+        $(".star-input").val(value);
+    });
+
+
+    $(".scroll").on("click", () => {
+        $([document.documentElement, document.body]).animate({
+        scrollTop: $("#reviewSection").offset().top
+        }, 2000);
+    });
+</script>
+
 <!-- Map script -->
 <script type="text/javascript">
     function initMap() {
@@ -194,7 +330,7 @@
 
         //this string is to be displayed when clicked on the marker
         const contentString = `
-            <strong><%= campground.name %><br />
+            <strong><%= campground.name %><br/>
             <%= campground.location %></strong>
             <p><%= campground.description %></p>
         `
@@ -216,6 +352,6 @@
     }
 </script>
 <!-- Don't steal this key :) -->
-<!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBII3hfRlVJtV1xekRaBigp5IbFv2pbtLY&callback=initMap"></script> -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBII3hfRlVJtV1xekRaBigp5IbFv2pbtLY&callback=initMap"></script>
 
 <%- include("../partials/footer") %>
