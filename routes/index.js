@@ -142,7 +142,7 @@ router.post("/forgot", async (req, res) => {
         await User.findOne({email: req.body.email}).then(async user => {
             //sent an error message if an user with that email cant be found
             if(!user){
-                req.flash("error", "No account is associated with that account!");
+                req.flash("error", "No account is associated with that email!");
                 return res.redirect("/forgot");
             }
 
@@ -155,7 +155,7 @@ router.post("/forgot", async (req, res) => {
                 const transport = nodemailer.createTransport({
                     host: "smtp.gmail.com",
                     auth: {
-                        type: "OAuth2",
+                        type: "OAuth2", 
                         user: "fornax.elit@gmail.com",
                         clientId: process.env.GOOGLE_CLIENT_ID,
                         clientSecret: process.env.GOOGLE_CLIENT_SECRET,

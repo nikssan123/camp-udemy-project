@@ -43,7 +43,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(mOverride("_method"));
 app.use(express.static(__dirname + "/public"));
-app.use("/public", express.static('public'))
+app.use("/public", express.static('public'));
 app.use(flash());
 
 app.locals.moment = moment; // this makes moment available as a variable in every EJS page
