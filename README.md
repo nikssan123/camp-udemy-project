@@ -15,5 +15,8 @@ npm start
 
 *Disclaimer* If you want to run the website it all it services, you should create a .env file and populate it with your information
 
+## Acknowledgment
+Logo made by [Alexander Uzunov](https://www.instagram.com/alex.uz3311.2/)
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
